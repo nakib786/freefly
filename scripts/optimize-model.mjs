@@ -21,6 +21,28 @@
  * meshoptimizer stops early if the error bound is hit, so the ratios below are
  * targets, not guarantees — curved exterior panels keep more than their ratio
  * asks for, which is the intent.
+ *
+ * ─── Why the shell is not decimated at all ──────────────────────────────────
+ * It used to be, at ratio 0.75, on the theory that a tight error bound would
+ * keep it clean. It does not, and the earlier note here claiming otherwise was
+ * wrong. Rendering the same view from the shipped GLB and from a build with the
+ * shell spared (.captures/ab1-high.png vs ab1-trial.png) shows the boot lid,
+ * rear quarter and A-pillar visibly crumpled, the panel-gap lines torn, and a
+ * sawtooth along the rear window frame — while the silhouette is unchanged.
+ *
+ * That last part is the tell. meshoptimizer's simplifier minimises *positional*
+ * error only; it has no view of the normals riding on those vertices. A tight
+ * `error` bound therefore does exactly what it promises — the surface stays
+ * where it was — while the normal field over it gets resampled onto a coarser
+ * set of vertices and interpolated across larger triangles. On a matte material
+ * that is invisible. On clearcoat paint, which is close to a mirror, it reads
+ * as dents. No error bound fixes this, because the metric being bounded is not
+ * the one that is going wrong.
+ *
+ * The cost of keeping it is small enough that the trade is not close: the shell
+ * is 220k triangles that Draco packs into roughly +140 KB over the decimated
+ * build, against a 5 MB budget. Everything the camera never inspects closely is
+ * still cut hard, which is where the 22.6 MB actually goes.
  */
 import { existsSync, mkdirSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -104,15 +126,13 @@ const LODS = {
     file: 'tesla-model-3.glb',
     texture: 1024,
     tiers: {
-      // 0.75, not the 0.3-ish a 40k budget would need. Measured, not guessed:
-      // at 0.50 the boot lid and rear quarter band badly under the clearcoat
-      // paint — a near-mirror surface magnifies interpolated-normal error that
-      // a matte material would hide entirely. 0.75 renders clean against the
-      // source at close range; 0.90 was only marginally better for +32k tris.
-      shell: { ratio: 0.75, error: 0.0006 },
-      // Scene 1 puts the camera on the front arch, close enough to read the
-      // tyre sidewall — spoke edges start to angulate below ~0.5.
-      wheels: { ratio: 0.6, error: 0.0009 },
+      // The shell is NOT decimated, at either LOD. See the header note on why
+      // any ratio below 1 visibly crumples the paint.
+      shell: { ratio: 1 },
+      // Same reasoning, and the hero camera parks on the front arch: sparing
+      // the wheels costs 36k tris / ~60 KB and removes the angular spoke edges
+      // and the sawtooth along the arch lip that 0.6 left behind.
+      wheels: { ratio: 1 },
       trim: { ratio: 0.18, error: 0.004 },
       cabin: { ratio: 0.08, error: 0.02 },
       hidden: { ratio: 0.06, error: 0.03 },
@@ -122,10 +142,15 @@ const LODS = {
     file: 'tesla-model-3-low.glb',
     texture: 512,
     tiers: {
-      // Mobile never gets the close-up scenes, but 0.35 still banded the boot
-      // lid visibly at phone size, so the shell keeps half its triangles here.
-      shell: { ratio: 0.5, error: 0.0025 },
-      wheels: { ratio: 0.3, error: 0.003 },
+      // Mobile is where the damage was worst — the phone scenes hold the car
+      // at mid distance across a whole section, so a crumpled flank is on
+      // screen far longer than it ever is on desktop. The shell is spared here
+      // too; the mobile LOD earns its size back on textures and interior.
+      shell: { ratio: 1 },
+      // Still cut, but with the border locked so the arch lip and tyre edge
+      // keep their outline. Rubber and dark rims hide interpolation error that
+      // clearcoat magnifies, so this tier tolerates decimation.
+      wheels: { ratio: 0.45, error: 0.002, lockBorder: true },
       trim: { ratio: 0.08, error: 0.01 },
       cabin: { ratio: 0.04, error: 0.04 },
       hidden: { ratio: 0.03, error: 0.05 },
@@ -207,7 +232,10 @@ async function build(lodName) {
       const s = (stats[tier] ??= { before: 0, after: 0, prims: 0, skipped: 0 });
       s.before += n;
       s.prims += 1;
-      if (n < MIN_TRIANGLES) {
+      // ratio >= 1 means "leave this tier alone". Passing it to meshoptimizer
+      // anyway is not a no-op: it still runs a collapse pass and can weld across
+      // smoothing seams, which is exactly the damage this tier is meant to avoid.
+      if (n < MIN_TRIANGLES || opts.ratio >= 1) {
         s.after += n;
         s.skipped += 1;
         continue;

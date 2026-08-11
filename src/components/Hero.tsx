@@ -13,7 +13,21 @@ import { REVIEW_SUMMARY } from '@/data/reviews';
 
 export function Hero() {
   return (
-    <section id="top" className="relative flex min-h-svh flex-col justify-end gutter pb-14 md:pb-20">
+    // pt reserves the fixed bar's height (h-16 / md:h-20 plus its progress
+    // rail). `justify-end` means it costs nothing while the copy fits, but on a
+    // short phone — a 667pt iPhone SE, say — the block is taller than the
+    // viewport, and without it the kicker and the first headline line grow up
+    // underneath the nav instead of pushing the section taller.
+    //
+    // Kept to just over the bar's height rather than a generous round number.
+    // Every pixel here pushes the credential strip down, and a reveal sits at
+    // opacity 0 with a 1.75rem downward offset until it intersects — so once
+    // its offset top passes the observer's -8% bottom margin, the strip is on
+    // screen and permanently invisible. pt-28 was over that line at 900px tall.
+    <section
+      id="top"
+      className="relative flex min-h-svh flex-col justify-end gutter pt-24 pb-14 md:pb-20"
+    >
       <Scrim />
 
       <div className="mx-auto w-full max-w-[110rem]">

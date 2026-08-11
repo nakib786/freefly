@@ -11,7 +11,8 @@
  * correctly, just slowly, which is why the waits below are generous.
  */
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -37,6 +38,7 @@ const scroll = Number(arg('scroll', 0));
 const name = arg('out', 'page');
 const settle = Number(arg('settle', 6000));
 const port = 9333 + Math.floor(Math.random() * 400);
+const PROFILE = resolve(tmpdir(), `freefly-shoot-${port}`);
 
 const chrome = spawn(
   CHROME,
@@ -54,7 +56,13 @@ const chrome = spawn(
     // Unique profile per run. A shared one makes a second invocation attach to
     // the first browser's lock instead of starting its own, and the debugging
     // port never opens.
-    '--user-data-dir=' + resolve(ROOT, `.captures/.chrome-${port}`),
+    //
+    // Kept in the OS temp dir, NOT under .captures/. A Chrome profile is tens
+    // of thousands of files, and inside the project vite's watcher picks the
+    // whole tree up: the dev server floods with reload events mid-run and then
+    // restarts, so the shot lands on a half-mounted page. Screenshots of an
+    // empty document are the symptom.
+    '--user-data-dir=' + PROFILE,
     'about:blank',
   ],
   { stdio: 'ignore' },
@@ -120,9 +128,19 @@ try {
   await sleep(settle);
 
   if (scroll > 0) {
-    await rpc(ws, 'Runtime.evaluate', {
-      expression: `window.scrollTo(0, (document.documentElement.scrollHeight - window.innerHeight) * ${scroll})`,
-    }, sessionId);
+    // Stepped, not a single jump. The page reveals content on IntersectionObserver
+    // entry and unobserves each node once shown, so a one-shot scrollTo past
+    // several screens can land with sections that were never intersected still
+    // at opacity 0 — the capture then shows empty bands where the copy should
+    // be, which looks like a layout bug and is not one. Walking down in screen-
+    // sized steps is also just what a reader does.
+    const steps = Math.max(1, Math.ceil((scroll * 12000) / height));
+    for (let i = 1; i <= steps; i++) {
+      await rpc(ws, 'Runtime.evaluate', {
+        expression: `window.scrollTo(0, (document.documentElement.scrollHeight - window.innerHeight) * ${(scroll * i) / steps})`,
+      }, sessionId);
+      await sleep(220);
+    }
     await sleep(2500);
   }
 
@@ -140,4 +158,13 @@ try {
   ws.close();
 } finally {
   chrome.kill();
+  // Best effort. kill() is not synchronous, so on Windows the profile's files
+  // are usually still locked a moment later — and this is a temp directory the
+  // OS will reap anyway. Failing the run over it would throw away the capture
+  // that was just taken.
+  try {
+    rmSync(PROFILE, { recursive: true, force: true });
+  } catch {
+    // still held by the exiting browser; leave it to the OS
+  }
 }

@@ -123,11 +123,14 @@ export const KEYFRAMES: readonly Keyframe[] = [
       lookAt: [0, 0.82, 0],
       fov: 36,
       // Plans is the densest section, so the car drops to a band along the
-      // bottom rather than competing with the pricing grid.
-      pan: [0, 0.78],
+      // bottom rather than competing with the pricing grid. 0.78 did not
+      // actually get it there — at this distance and fov one metre of pan is
+      // only ~18% of the frame, so it left the car sitting across the middle of
+      // the pricing columns. 1.9 is what puts its roof line under them.
+      pan: [0, 1.9],
     },
     car: { speed: 14, pitch: 0, steer: 0, lights: 1 },
-    mobile: { position: [-10.5, 1.5, 0.4], fov: 40, pan: [0, 0.95] },
+    mobile: { position: [-10.5, 1.5, 0.4], fov: 40, pan: [0, 2.2] },
   },
   {
     id: 'approach',
@@ -139,10 +142,14 @@ export const KEYFRAMES: readonly Keyframe[] = [
       position: [-4.35, 1.3, -6.2],
       lookAt: [0, 0.78, -0.35],
       fov: 31,
-      pan: [-1.5, 0.05],
+      // Instructors has no free side: the portrait takes the left, the bio and
+      // review evidence take the right. So the car goes under both rather than
+      // beside either — the sideways offset is kept only so its nose is not
+      // centred directly beneath the bio paragraphs.
+      pan: [-1.2, 1.15],
     },
     car: { speed: 5, pitch: -0.8, steer: 6, lights: 1 },
-    mobile: { position: [-4.9, 1.45, -7.0], fov: 37, pan: [0, 0.6] },
+    mobile: { position: [-4.9, 1.45, -7.0], fov: 37, pan: [0, 1.5] },
   },
   {
     id: 'parked',

@@ -141,14 +141,19 @@
   line-height: 1.15;
 }
 
-/* Telemetry: section numbers, prices, hour counts, form labels. */
+/* Telemetry: section numbers, prices, hour counts, form labels.
+
+   line-height is 1.45, not 1. Most of these are single-line labels where the
+   value is invisible, but the hero's credential strip and the instructor
+   eyebrow are long strings that wrap on a phone — and at line-height 1 an
+   uppercase mono face has its descenders sitting on the next line's caps. */
 @utility type-telemetry {
   font-family: var(--font-mono);
   font-stretch: 85%;
   font-weight: 500;
   font-size: var(--text-kicker);
   letter-spacing: 0.16em;
-  line-height: 1;
+  line-height: 1.45;
   text-transform: uppercase;
 }
 
