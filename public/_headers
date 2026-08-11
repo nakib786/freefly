@@ -34,3 +34,9 @@
 
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
+
+/credits
+  Cache-Control: public, max-age=0, must-revalidate
+
+/credits.html
+  Cache-Control: public, max-age=0, must-revalidate

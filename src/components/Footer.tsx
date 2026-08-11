@@ -1,16 +1,16 @@
 /**
- * Footer. Carries the CC-BY attribution the 3D model's licence requires.
+ * Footer.
+ *
+ * The car's CC-BY attribution is no longer inline here — it lives on /credits,
+ * linked below. The licence asks for credit "in any reasonable manner based on
+ * the medium"; a linked credits page is the ordinary form of that on the web,
+ * and it buys the room to name the author properly, list what was changed to
+ * the model, and show the original file. If that link ever goes, the credit has
+ * to come back into this bar.
  */
 import { Wordmark } from '@/components/primitives';
 import { BUSINESS, SOCIALS } from '@/data/business';
-
-const MODEL_CREDIT = {
-  title: 'Tesla 2018 Model 3',
-  author: 'Ameer Studio',
-  source: 'https://sketchfab.com/3d-models/tesla-2018-model-3-5ef9b845aaf44203b6d04e2c677e444f',
-  licence: 'CC Attribution',
-  licenceUrl: 'https://creativecommons.org/licenses/by/4.0/',
-};
+import { DEVELOPER } from '@/data/credits';
 
 /**
  * The camera's last keyframe parks the car centred and low, directly behind
@@ -81,29 +81,33 @@ export function Footer() {
         </div>
 
         <div className="rule-t mt-14 flex flex-col gap-4 pt-8 md:flex-row md:items-center md:justify-between">
-          <p className="type-telemetry text-cream-faint">
-            © {new Date().getFullYear()} {BUSINESS.legalName}
+          <p className="type-telemetry flex flex-wrap items-center gap-x-3 gap-y-1 text-cream-faint">
+            <span>
+              © {new Date().getFullYear()} {BUSINESS.legalName}
+            </span>
+            {/* Separator only where the two actually share a line. On a phone
+                they stack, and a leading slash on the second line reads as a
+                stray character rather than as punctuation. */}
+            <span aria-hidden className="hidden text-ink-600 md:inline">
+              /
+            </span>
+            <a
+              href="/credits"
+              className="text-cream-dim underline underline-offset-4 hover:text-azure-bright"
+            >
+              Credits &amp; licences
+            </a>
           </p>
 
-          {/* CC-BY requires attribution wherever the work is used. */}
           <p className="type-telemetry text-cream-faint">
-            3D model{' '}
+            Site by{' '}
             <a
-              href={MODEL_CREDIT.source}
+              href={DEVELOPER.href}
               target="_blank"
               rel="noopener noreferrer"
               className="text-cream-dim underline underline-offset-4 hover:text-azure-bright"
             >
-              &ldquo;{MODEL_CREDIT.title}&rdquo;
-            </a>{' '}
-            by {MODEL_CREDIT.author}, licensed{' '}
-            <a
-              href={MODEL_CREDIT.licenceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-cream-dim underline underline-offset-4 hover:text-azure-bright"
-            >
-              {MODEL_CREDIT.licence}
+              {DEVELOPER.name}
             </a>
           </p>
         </div>

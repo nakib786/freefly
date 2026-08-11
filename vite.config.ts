@@ -1,4 +1,5 @@
-import { createReadStream, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, createReadStream, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { fileURLToPath, URL } from 'node:url';
 
 import tailwindcss from '@tailwindcss/vite';
@@ -6,19 +7,76 @@ import react from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 
 /**
- * Serves the untouched 21.6 MB source GLB at /src-model/* during dev only, so
- * model-check.html can A/B the decimated LODs against the original. It is not
- * in publicDir, so it never reaches a production build.
+ * The untouched 21.6 MB source GLB, which lives in `assets/models/` rather than
+ * `public/` so that nothing can pull it in by accident.
+ *
+ * Two mount points, both dev-only:
+ *   /src-model/*          model-check.html, to A/B the LODs against the source
+ *   /models/source/*      the public path, so /credits uses one URL everywhere
+ *
+ * The second is the one that matters. `copySourceModel` puts the same file at
+ * the same path in `dist/`, so the credits page never needs to know whether it
+ * is running against the dev server or a deploy.
  */
 function serveSourceModels(): Plugin {
+  const send = (req: IncomingMessage, res: ServerResponse, next: (err?: unknown) => void) => {
+    const file = fileURLToPath(new URL(`./assets/models${req.url}`, import.meta.url));
+    res.setHeader('Content-Type', 'model/gltf-binary');
+    createReadStream(file).on('error', next).pipe(res);
+  };
+
   return {
     name: 'freefly:serve-source-models',
     apply: 'serve',
     configureServer(server) {
-      server.middlewares.use('/src-model', (req, res, next) => {
-        const file = fileURLToPath(new URL(`./assets/models${req.url}`, import.meta.url));
-        res.setHeader('Content-Type', 'model/gltf-binary');
-        createReadStream(file).on('error', next).pipe(res);
+      server.middlewares.use('/src-model', send);
+      server.middlewares.use('/models/source', send);
+    },
+  };
+}
+
+/**
+ * Ships that same source GLB to `dist/models/source/` for the credits page.
+ *
+ * It is the one genuinely heavy thing in the deploy, and it is deliberate: the
+ * CC-BY licence on the car is easier to check against the actual file, and the
+ * page never requests it until a visitor has read the size and clicked. The
+ * `/models/*` rule in public/_headers gives it an immutable cache.
+ */
+function copySourceModel(): Plugin {
+  return {
+    name: 'freefly:copy-source-model',
+    apply: 'build',
+    closeBundle() {
+      const from = fileURLToPath(new URL('./assets/models/tesla-model-3-ameer.glb', import.meta.url));
+      const dir = fileURLToPath(new URL('./dist/models/source/', import.meta.url));
+      mkdirSync(dir, { recursive: true });
+      copyFileSync(from, `${dir}tesla-model-3-ameer.glb`);
+    },
+  };
+}
+
+/**
+ * Clean URLs for the extra document in dev.
+ *
+ * Cloudflare Pages serves `credits.html` at `/credits` on its own, so the
+ * deployed link works without any config. The dev server does not, and a footer
+ * link that 404s locally is the kind of thing that gets "fixed" by changing the
+ * link to the ugly URL. Rewriting here keeps one href correct in both places.
+ */
+function cleanUrls(): Plugin {
+  return {
+    name: 'freefly:clean-urls',
+    apply: 'serve',
+    configureServer(server) {
+      server.middlewares.use((req, _res, next) => {
+        // Split the query off first, or ?scene=full — the QA flag the whole
+        // 3D path is exercised with — misses the match and falls through to a 404.
+        const [path, query] = (req.url ?? '').split('?');
+        if (path === '/credits' || path === '/credits/') {
+          req.url = `/credits.html${query ? `?${query}` : ''}`;
+        }
+        next();
       });
     },
   };
@@ -74,12 +132,29 @@ function excludeRawPhotos(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), serveSourceModels(), captureSink(), excludeRawPhotos()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    serveSourceModels(),
+    captureSink(),
+    excludeRawPhotos(),
+    copySourceModel(),
+    cleanUrls(),
+  ],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
   build: {
     target: 'es2022',
+    // Two documents, named explicitly. model-check.html and static-hero.html are
+    // dev harnesses and are left out on purpose — naming any input at all means
+    // index.html has to be listed too, so this is the whole production surface.
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        credits: fileURLToPath(new URL('./credits.html', import.meta.url)),
+      },
+    },
     // No manualChunks here, deliberately. Naming three/r3f/gsap as manual
     // chunks made them siblings of the entry rather than children of the
     // dynamic import, and Vite then emitted <link rel="modulepreload"> for

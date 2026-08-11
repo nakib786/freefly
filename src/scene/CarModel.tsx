@@ -5,8 +5,12 @@
  * "Tesla 2018 Model 3" by Ameer Studio — Sketchfab, CC-BY 4.0
  * https://sketchfab.com/3d-models/tesla-2018-model-3-5ef9b845aaf44203b6d04e2c677e444f
  *
+ * The visitor-facing side of that licence is /credits (src/credits/), which
+ * publishes the attribution, the list of modifications below, and the original
+ * file. src/data/credits.ts is the single copy of those facts — edit them there.
+ *
  * Source GLB: 684,315 tris / 394,055 verts / 176 meshes / 58 materials, 21.6 MB.
- * Shipped GLB: 276,132 tris, 1.35 MB (desktop) / 166,842 tris, 0.93 MB (mobile).
+ * Shipped GLB: 366,721 tris, 1.49 MB (desktop) / 291,534 tris, 1.18 MB (mobile).
  *
  * Produced by `npm run model:optimize` (scripts/optimize-model.mjs), which is
  * the authoritative record of the pipeline. In short, per LOD:
@@ -14,29 +18,28 @@
  *   1. dedup()  — collapse duplicate accessors/materials/textures
  *   2. weld()   — index and merge coincident vertices (required before simplify)
  *   3. simplifyPrimitive() per primitive, meshoptimizer, ratio+error by tier:
- *        shell  (paint, glass, lights)  ratio 0.75  error 0.0006
- *        wheels (rims, tyres, hubs)     ratio 0.60  error 0.0009
- *        trim   (black plastics, misc)  ratio 0.18  error 0.004
- *        cabin  (seats, carpet, wheel)  ratio 0.08  error 0.02
- *        hidden (chassis, suspension)   ratio 0.06  error 0.03
+ *        shell  (paint, glass, lights)  not decimated, either LOD
+ *        wheels (rims, tyres, hubs)     not decimated / 0.45 on mobile
+ *        trim   (black plastics, misc)  ratio 0.18 / 0.08
+ *        cabin  (seats, carpet, wheel)  ratio 0.08 / 0.04
+ *        hidden (chassis, suspension)   ratio 0.06 / 0.03
  *      Primitives under 128 tris are left alone so badges and handles survive.
  *   4. sharp: 22 PNGs -> WebP @ q82, capped at 1024px (1.56 MB -> 0.20 MB)
  *   5. prune() then Draco EDGEBREAKER, quantisation P14/N10/UV12
  *
  * Tiering rather than one global ratio is the whole trick here: the cabin is
  * ~32% of the source triangles and is only ever seen through tinted glass, so
- * cutting it to 8% buys the body panels and wheels — which the hero camera sits
- * right on top of — enough budget to stay smooth on their curves.
+ * cutting it to 4-8% is what pays for leaving the body panels and wheels — the
+ * surfaces the hero camera sits right on top of — completely alone.
  *
  * On the triangle count: this lands well above a 30-50k budget, and that is a
- * deliberate, measured call rather than a miss. The shell ratio was A/B'd
- * against the untouched source at hero-camera range (see model-check.html) at
- * 0.50 / 0.75 / 0.90. At 0.50 — roughly what a 40k total would demand — the
- * boot lid and rear quarter band visibly, because clearcoat paint is close to a
- * mirror and magnifies interpolated-normal error that a matte material would
- * hide. The constraint that actually binds is transfer size, and 1.35 MB is a
- * 16x reduction with a lot of headroom under the 5 MB budget. 276k triangles in
- * one draw-call-bound scene is not what limits frame rate on this page.
+ * deliberate, measured call rather than a miss. Decimating the shell at all is
+ * what made the paint look dented — meshoptimizer bounds positional error and
+ * has no view of the normals, which is the thing clearcoat magnifies. See the
+ * "Why the shell is not decimated" note in optimize-model.mjs for the A/B. The
+ * constraint that actually binds is transfer size, and 1.49 MB is a 15x
+ * reduction with a lot of headroom under the 5 MB budget. 367k triangles in one
+ * draw-call-bound scene is not what limits frame rate on this page.
  *
  * ─── Geometry notes ────────────────────────────────────────────────────────
  * The export is in FBX-ish units (~525 long) with the origin at the car's

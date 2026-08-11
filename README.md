@@ -47,7 +47,8 @@ them.
   at the real camera angles. Use this before changing any decimation ratio.
 - `/static-hero.html` — the bare render that `npm run hero` photographs.
 
-Neither is in the production build.
+Neither is in the production build — `build.rollupOptions.input` names only
+`index.html` and `credits.html`.
 
 ### QA query string
 
@@ -226,11 +227,16 @@ and disables content reveals — the preference is about motion, not about 3D.
 
 ## The 3D asset
 
-Source: **"Tesla 2018 Model 3" by Ameer Studio**, Sketchfab, CC-BY 4.0 —
-attribution is rendered in the site footer, as the licence requires.
+Source: **"Tesla 2018 Model 3" by Ameer Studio**, Sketchfab, CC-BY 4.0.
 
-684,315 tris / 21.6 MB down to 276,132 tris / 1.35 MB (desktop) and 166,842 tris
-/ 0.93 MB (mobile). `scripts/optimize-model.mjs` documents the tiered
+The licence requires attribution and an indication that the work was modified.
+Both are published on **`/credits`**, linked from the footer, along with the
+untouched source file itself — behind a click, because it is 21.6 MB. The facts
+live in one place, `src/data/credits.ts`; the footer no longer carries an inline
+credit, so if that page or its link is removed the credit has to go back there.
+
+684,315 tris / 21.6 MB down to 366,721 tris / 1.49 MB (desktop) and 291,534 tris
+/ 1.18 MB (mobile). `scripts/optimize-model.mjs` documents the tiered
 decimation and why it is tiered; `src/scene/CarModel.tsx` documents why the
 triangle count is where it is.
 
