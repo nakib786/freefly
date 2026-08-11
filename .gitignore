@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.captures/
+*.local
+.env
+.env.*
+!.env.example
+.DS_Store
+.wrangler/
+
+# Worker build artefacts
+mailer/node_modules/
+mailer/worker-configuration.d.ts
+mailer/.wrangler/

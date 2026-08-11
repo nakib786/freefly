@@ -1,0 +1,55 @@
+{
+  "name": "freefly-driving",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:full": "npm run build && wrangler pages dev dist --port 5182",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "deploy": "npm run deploy:mailer && npm run build && wrangler pages deploy dist --project-name freefly-driving --branch main --commit-dirty=true",
+    "deploy:mailer": "npm --prefix mailer run deploy",
+    "typecheck": "tsc -b --noEmit",
+    "brand": "node scripts/prepare-brand.mjs",
+    "photos": "node scripts/prepare-photos.mjs",
+    "hero": "node scripts/render-hero.mjs",
+    "shoot": "node scripts/shoot.mjs",
+    "favicons": "node scripts/generate-favicons.mjs",
+    "model:optimize": "node scripts/optimize-model.mjs",
+    "model:report": "node scripts/inspect-model.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/instrument-sans": "^5.3.0",
+    "@fontsource-variable/martian-mono": "^5.3.0",
+    "@react-three/drei": "^10.7.6",
+    "@react-three/fiber": "^9.3.0",
+    "gsap": "^3.13.0",
+    "mimetext": "^3.0.28",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "three": "^0.181.0"
+  },
+  "devDependencies": {
+    "@gltf-transform/core": "^4.4.2",
+    "@gltf-transform/extensions": "^4.4.2",
+    "@gltf-transform/functions": "^4.4.2",
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/node": "^24.7.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@types/three": "^0.181.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "draco3dgltf": "^1.5.7",
+    "meshoptimizer": "^0.25.0",
+    "sharp": "^0.35.3",
+    "tailwindcss": "^4.1.14",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9",
+    "wrangler": "^4.120.1"
+  },
+  "overrides": {
+    "sharp": "^0.35.3"
+  }
+}

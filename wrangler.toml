@@ -1,0 +1,35 @@
+# Cloudflare Pages configuration for the site.
+#
+# ─── Why there are two deployables and not one ────────────────────────────
+# The site is a Pages project; the mailer (mailer/) is a Worker. That split is
+# forced by two hard platform constraints, not by preference:
+#
+#   1. `send_email` and `ratelimits` are Workers-only bindings. Pages config
+#      rejects both outright ("Configuration file for Pages projects does not
+#      support send_email"), so a Pages Function physically cannot send mail.
+#
+#   2. The obvious fix — migrate the whole site to a Worker with static assets —
+#      breaks the live domain. freeflydriving.ca runs on Wix nameservers
+#      (ns2.wixdns.net), so the zone is not on this Cloudflare account.
+#      new.freeflydriving.ca works today because Pages accepts a CNAME from
+#      external DNS; Workers Custom Domains require the zone to be on-account.
+#      Deploying the site as a Worker would take the domain down.
+#
+# So the two are stitched together with a service binding below. The mailer has
+# no public route — the only way to reach it is through /api/contact on this
+# project, which means one public origin and no CORS anywhere.
+#
+# If freeflydriving.ca is ever moved onto Cloudflare, this can collapse into a
+# single Worker with `assets` — see README.
+
+name = "freefly-driving"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-08-11"
+
+# The mailer, reachable only from this project's Functions.
+[[services]]
+binding = "MAILER"
+service = "freefly-mailer"
+
+# WIX_API_KEY and WIX_SITE_ID are encrypted secrets set in the Pages dashboard,
+# deliberately not here — an API key in a committed .toml ends up in git history.

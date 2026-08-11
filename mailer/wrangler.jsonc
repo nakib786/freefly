@@ -1,0 +1,49 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "freefly-mailer",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-11",
+  // mimetext needs a couple of Node built-ins.
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  // No routes and no custom domain on purpose. The only caller is the
+  // freefly-driving Pages project via its MAILER service binding, so there is
+  // no public URL to find, rate-limit-probe, or spam directly.
+  "workers_dev": false,
+
+  // Cloudflare Email Routing's send binding.
+  //
+  // `destination_address` pins delivery at the platform level: even if this
+  // code were compromised, Cloudflare refuses to deliver anywhere except this
+  // one verified inbox. The recipient is never derived from request data.
+  //
+  // Must be a VERIFIED destination under Email Routing on the account. To
+  // change it later: verify the new address first, then update and redeploy.
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "destination_address": "nakibshaikh786@gmail.com"
+    }
+  ],
+
+  // `period` only accepts 10 or 60 seconds, so this is burst protection rather
+  // than a daily quota — 2/min per enquirer IP. Combined with the honeypot and
+  // the pinned destination above, the worst case is volume, not misdirection.
+  "ratelimits": [
+    {
+      "name": "RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 2, "period": 60 }
+    }
+  ],
+
+  "vars": {
+    // Sender lives on aurorabusiness.ca because that zone is on this Cloudflare
+    // account with Email Routing enabled. freeflydriving.ca runs on Wix
+    // nameservers, so it cannot send here — Reply-To carries the enquirer's own
+    // address, so replying from the inbox still reaches the student directly.
+    "MAIL_FROM": "freefly-enquiries@aurorabusiness.ca",
+    "MAIL_FROM_NAME": "Free Fly Driving School"
+  }
+}

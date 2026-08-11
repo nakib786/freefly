@@ -1,0 +1,222 @@
+@import 'tailwindcss';
+
+/* ===========================================================================
+   Free Fly design tokens
+   ---------------------------------------------------------------------------
+   Every colour here is sampled from the supplied logo, not invented:
+
+     crimson  #cd1d4f   the bright top of the car mark's gradient
+     wine     #8c0f42   its deep bottom
+     slate    #58646a   the FREEFLY / DRIVING SCHOOL wordmark fill
+     cream    #fffbf4   the logo's own background
+
+   The ink ramp is a near-black carrying a trace of the crimson hue, so the
+   darks sit under the accent rather than fighting it — a neutral grey-black
+   makes #cd1d4f read as a warning colour instead of a brand colour.
+
+   Note on the gradient rule in the brief: crimson -> wine is ~345 degrees of
+   hue, nowhere near the 200-290 indigo/violet band, and it is taken from the
+   brand's own artwork rather than a framework default.
+
+   Type: Archivo Variable carries a real width axis (62-125%), so headlines are
+   set EXPANDED and kickers CONDENSED — the contrast is structural, not just
+   weight. That also echoes the logo, whose wordmark is a wide stencil face over
+   a narrow tracked-out subtitle. Martian Mono (also width-variable) is used
+   small, condensed and letter-spaced for anything numeric, so prices and lesson
+   hours read as instrument-cluster telemetry rather than as body copy.
+   =========================================================================== */
+
+@theme {
+  --font-display: 'Archivo Variable', 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Instrument Sans Variable', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Martian Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+
+  --color-ink-950: #090708;
+  --color-ink-900: #0e0c0d;
+  --color-ink-850: #131112;
+  --color-ink-800: #191617;
+  --color-ink-700: #241f21;
+  --color-ink-600: #322b2e;
+  --color-ink-500: #4a4245;
+
+  --color-cream: #fffbf4;
+  --color-cream-dim: #b9b3ab;
+  --color-cream-faint: #7d7873;
+
+  --color-slate: #58646a;
+  --color-slate-light: #8a959a;
+
+  --color-crimson: #cd1d4f;
+  --color-crimson-bright: #e8386c;
+  --color-wine: #8c0f42;
+  --color-wine-deep: #4d0824;
+
+  /* Fluid display sizes, clamped against viewport width so the hero headline
+     stays one confident block from 360px up to ultrawide. */
+  --text-kicker: 0.6875rem;
+  --text-display-sm: clamp(2rem, 6vw, 3.5rem);
+  --text-display: clamp(2.75rem, 8.5vw, 7rem);
+  --text-display-lg: clamp(3.25rem, 12vw, 11rem);
+
+  --ease-drive: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ------------------------------------------------------------------ base -- */
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    scrollbar-color: var(--color-ink-600) var(--color-ink-950);
+  }
+
+  html {
+    /* ScrollTrigger scrubs off native scroll position; smooth-scroll on the
+       root fights it and makes the camera feel rubbery. */
+    scroll-behavior: auto;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-cream);
+    font-family: var(--font-body);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-crimson);
+    color: var(--color-cream);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-crimson-bright);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  /* Anything that only exists for screen readers. */
+  .sr-only:not(:focus):not(:active) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* ------------------------------------------------------------- utilities -- */
+
+/* Hero-scale headline: expanded, tight, uppercase. */
+@utility type-display {
+  font-family: var(--font-display);
+  font-stretch: 118%;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+
+/* Section headline: same voice, slightly narrower and looser than the hero. */
+@utility type-heading {
+  font-family: var(--font-display);
+  font-stretch: 108%;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+/* Condensed counterweight to the expanded headlines — used for standfirsts. */
+@utility type-condensed {
+  font-family: var(--font-display);
+  font-stretch: 76%;
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  line-height: 1.15;
+}
+
+/* Telemetry: section numbers, prices, hour counts, form labels. */
+@utility type-telemetry {
+  font-family: var(--font-mono);
+  font-stretch: 85%;
+  font-weight: 500;
+  font-size: var(--text-kicker);
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Page-wide gutter. One value everywhere, so the left edge is unbroken from
+   nav to footer and the page reads as a single ruled sheet. */
+@utility gutter {
+  padding-inline: 1.5rem;
+  @media (width >= 48rem) {
+    padding-inline: 3rem;
+  }
+  @media (width >= 90rem) {
+    padding-inline: 5rem;
+  }
+}
+
+/* Fine film grain over the whole page. Costs nothing, and is most of the
+   difference between "dark site" and "cinematic dark site". */
+@utility grain {
+  position: relative;
+  isolation: isolate;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Hairline rules, used to build the page's structural grid. */
+@utility rule-t {
+  border-top: 1px solid var(--color-ink-700);
+}
+@utility rule-b {
+  border-bottom: 1px solid var(--color-ink-700);
+}
+@utility rule-l {
+  border-left: 1px solid var(--color-ink-700);
+}
+
+/* Reveal primitive. GSAP drives these by toggling `data-shown`; without JS or
+   with reduced motion the content is simply visible, never stuck hidden. */
+@utility reveal {
+  opacity: 0;
+  transform: translateY(1.75rem);
+  transition:
+    opacity 0.9s var(--ease-drive),
+    transform 0.9s var(--ease-drive);
+
+  &[data-shown='true'] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
