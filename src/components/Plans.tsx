@@ -50,7 +50,7 @@ function PerkList({ perks }: { perks: readonly string[] }) {
     <ul className="flex flex-col gap-2">
       {perks.map((perk) => (
         <li key={perk} className="flex gap-3 text-sm text-cream-dim">
-          <span aria-hidden className="mt-[0.45em] h-px w-3 shrink-0 bg-crimson" />
+          <span aria-hidden className="mt-[0.45em] h-px w-3 shrink-0 bg-azure" />
           {perk}
         </li>
       ))}
@@ -97,11 +97,11 @@ function PackageColumn({ plan, maxHours }: { plan: Plan; maxHours: number }) {
       <div>
         <div className="flex items-baseline justify-between gap-4">
           <h3 className="type-heading text-xl text-cream md:text-2xl">{plan.name}</h3>
-          <span className="type-telemetry shrink-0 text-crimson">{plan.hours} hrs</span>
+          <span className="type-telemetry shrink-0 text-azure">{plan.hours} hrs</span>
         </div>
         <p className="mt-4 max-w-[36ch] text-sm text-cream-dim">{plan.description}</p>
         <div className="mt-8">
-          <ChargeMeter count={plan.sessions} tone="bg-crimson" />
+          <ChargeMeter count={plan.sessions} tone="bg-azure" />
           <p className="type-telemetry mt-3 text-cream-faint">{plan.sessions} lessons</p>
         </div>
       </div>
@@ -115,7 +115,7 @@ function PackageColumn({ plan, maxHours }: { plan: Plan; maxHours: number }) {
           {plan.terms && <p className="mt-3 max-w-[30ch] text-xs text-cream-dim">{plan.terms}</p>}
           <a
             href={BUSINESS.phoneHref}
-            className="type-telemetry mt-6 inline-block border border-ink-600 px-5 py-3 text-cream transition-colors hover:border-crimson hover:text-crimson-bright"
+            className="type-telemetry mt-6 inline-block border border-ink-600 px-5 py-3 text-cream transition-colors hover:border-azure hover:text-azure-bright"
           >
             Enquire
           </a>
@@ -128,7 +128,7 @@ function PackageColumn({ plan, maxHours }: { plan: Plan; maxHours: number }) {
 function Capstone({ plan }: { plan: Plan }) {
   return (
     <article
-      className="reveal relative mt-16 overflow-hidden border border-crimson/40 md:mt-24"
+      className="reveal relative mt-16 overflow-hidden border border-azure/40 md:mt-24"
       data-reveal
     >
       {/* Chequered flag, drawn rather than imported — two rows of squares is
@@ -138,16 +138,16 @@ function Capstone({ plan }: { plan: Plan }) {
         className="absolute inset-y-0 right-0 w-40 opacity-25 md:w-72"
         style={{
           backgroundImage:
-            'linear-gradient(45deg, #cd1d4f 25%, transparent 25%, transparent 75%, #cd1d4f 75%), linear-gradient(45deg, #cd1d4f 25%, transparent 25%, transparent 75%, #cd1d4f 75%)',
+            'linear-gradient(45deg, #1a72d6 25%, transparent 25%, transparent 75%, #1a72d6 75%), linear-gradient(45deg, #1a72d6 25%, transparent 25%, transparent 75%, #1a72d6 75%)',
           backgroundSize: '22px 22px',
           backgroundPosition: '0 0, 11px 11px',
           maskImage: 'linear-gradient(to right, transparent, #000)',
           WebkitMaskImage: 'linear-gradient(to right, transparent, #000)',
         }}
       />
-      <div className="relative flex flex-col gap-8 bg-gradient-to-r from-wine-deep/60 to-transparent p-8 md:flex-row md:items-end md:justify-between md:p-12">
+      <div className="relative flex flex-col gap-8 bg-gradient-to-r from-marine-deep/60 to-transparent p-8 md:flex-row md:items-end md:justify-between md:p-12">
         <div>
-          <p className="type-telemetry text-crimson-bright">Final step</p>
+          <p className="type-telemetry text-azure-bright">Final step</p>
           <h3 className="type-heading mt-4 text-3xl text-cream md:text-4xl">{plan.name}</h3>
           <p className="mt-4 max-w-[46ch] text-sm text-cream-dim">{plan.description}</p>
           <div className="mt-8">
@@ -158,7 +158,7 @@ function Capstone({ plan }: { plan: Plan }) {
           <Price plan={plan} className="text-5xl md:text-6xl" />
           <a
             href={BUSINESS.phoneHref}
-            className="type-telemetry mt-6 inline-block bg-crimson px-6 py-4 text-cream transition-colors hover:bg-crimson-bright"
+            className="type-telemetry mt-6 inline-block bg-azure px-6 py-4 text-cream transition-colors hover:bg-azure-bright"
           >
             Book road test
           </a>

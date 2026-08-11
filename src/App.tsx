@@ -16,7 +16,7 @@ export default function App() {
   if (import.meta.env.DEV) {
     console.info(
       `%cFree Fly — ${PLACEHOLDERS.length} placeholders outstanding`,
-      'color:#cd1d4f;font-weight:bold',
+      'color:#1a72d6;font-weight:bold',
     );
     for (const item of PLACEHOLDERS) console.info(`  • ${item}`);
   }
@@ -25,7 +25,7 @@ export default function App() {
     <div className="grain relative">
       <a
         href="#lessons"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-crimson focus:px-4 focus:py-3 focus:text-cream"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-azure focus:px-4 focus:py-3 focus:text-cream"
       >
         Skip to lessons and pricing
       </a>

@@ -29,7 +29,7 @@ function SceneSkeleton() {
           role="progressbar"
           aria-label="Loading 3D scene"
         >
-          <div className="h-full w-1/3 animate-[slide_1.4s_var(--ease-drive)_infinite] bg-crimson" />
+          <div className="h-full w-1/3 animate-[slide_1.4s_var(--ease-drive)_infinite] bg-azure" />
         </div>
         <p className="type-telemetry text-cream-faint">Loading scene</p>
       </div>

@@ -13,7 +13,7 @@
  */
 import { useState } from 'react';
 
-import { PlaceholderNote, Scrim, Section } from '@/components/primitives';
+import { Scrim, Section } from '@/components/primitives';
 import { BUSINESS, FOUNDED, INSTRUCTOR, JOURNEY } from '@/data/business';
 import { INSTRUCTOR_PHOTO } from '@/data/photos.generated';
 import { REVIEW_SUMMARY } from '@/data/reviews';
@@ -82,7 +82,7 @@ export function Instructors() {
 
         <div className="flex flex-col gap-10 md:col-span-5">
           <div>
-            <p className="type-telemetry text-crimson">{INSTRUCTOR.role}</p>
+            <p className="type-telemetry text-azure">{INSTRUCTOR.role}</p>
             <p className="type-display mt-4 text-display-sm text-cream">{INSTRUCTOR.firstName}</p>
             {INSTRUCTOR.bio.map((para) => (
               <p key={para} className="mt-5 max-w-[46ch] text-base leading-relaxed text-cream-dim">
@@ -96,9 +96,9 @@ export function Instructors() {
               href={REVIEW_SUMMARY.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="type-telemetry mt-7 inline-flex items-baseline gap-2 border border-ink-600 bg-ink-950/90 px-4 py-3 text-cream transition-colors hover:border-crimson hover:text-crimson-bright"
+              className="type-telemetry mt-7 inline-flex items-baseline gap-2 border border-ink-600 bg-ink-950/90 px-4 py-3 text-cream transition-colors hover:border-azure hover:text-azure-bright"
             >
-              <span className="text-crimson">★ {REVIEW_SUMMARY.rating.toFixed(1)}</span>
+              <span className="text-azure">★ {REVIEW_SUMMARY.rating.toFixed(1)}</span>
               <span>from {REVIEW_SUMMARY.count} reviews</span>
             </a>
           </div>
@@ -114,10 +114,6 @@ export function Instructors() {
               </li>
             ))}
           </ul>
-
-          <PlaceholderNote>
-            Certifications and years of experience not yet supplied
-          </PlaceholderNote>
         </div>
       </div>
 
@@ -136,7 +132,7 @@ export function Instructors() {
           style={{
             marginBlock: '-3rem',
             background:
-              'linear-gradient(to bottom, rgba(9,7,8,0) 0%, rgba(9,7,8,0.88) 18%, rgba(9,7,8,0.88) 82%, rgba(9,7,8,0) 100%)',
+              'linear-gradient(to bottom, rgba(6,8,9,0) 0%, rgba(6,8,9,0.88) 18%, rgba(6,8,9,0.88) 82%, rgba(6,8,9,0) 100%)',
           }}
         />
         <p className="reveal type-telemetry mb-8 text-cream-dim" data-reveal>
@@ -145,7 +141,7 @@ export function Instructors() {
         <ol className="grid gap-px md:grid-cols-4">
           {JOURNEY.map((stage) => (
             <li key={stage.step} className="reveal rule-t pt-6" data-reveal>
-              <span className="font-display text-4xl font-extrabold tracking-tight text-crimson">
+              <span className="font-display text-4xl font-extrabold tracking-tight text-azure">
                 {stage.step}
               </span>
               <p className="type-heading mt-4 text-lg text-cream">{stage.label}</p>

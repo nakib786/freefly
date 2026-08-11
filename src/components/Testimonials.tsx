@@ -30,7 +30,7 @@ function Stars({ count }: { count: number }) {
         <svg key={i} viewBox="0 0 20 20" className="h-3.5 w-3.5" aria-hidden>
           <path
             d="M10 1l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L1.3 7.4l6.1-.8z"
-            fill={i < count ? 'var(--color-crimson)' : 'var(--color-ink-600)'}
+            fill={i < count ? 'var(--color-azure)' : 'var(--color-ink-600)'}
           />
         </svg>
       ))}
@@ -53,7 +53,7 @@ function ReviewCard({ review, wide }: { review: Review; wide: boolean }) {
               href={REVIEW_SUMMARY.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="type-telemetry align-middle text-crimson-bright underline underline-offset-4"
+              className="type-telemetry align-middle text-azure-bright underline underline-offset-4"
             >
               read in full
             </a>
@@ -140,7 +140,7 @@ export function Testimonials() {
           </span>
           <span className="flex flex-col gap-2 pb-2">
             <Stars count={5} />
-            <span className="type-telemetry text-cream-dim transition-colors group-hover:text-crimson-bright">
+            <span className="type-telemetry text-cream-dim transition-colors group-hover:text-azure-bright">
               {REVIEW_SUMMARY.count} {REVIEW_SUMMARY.source} reviews
             </span>
           </span>

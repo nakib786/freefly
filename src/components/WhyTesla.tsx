@@ -40,7 +40,7 @@ export function WhyTesla() {
               style={{ paddingLeft: `${STEP[i % STEP.length]}rem` }}
             >
               <div className="grid gap-4 md:grid-cols-[4rem_minmax(0,18rem)_minmax(0,1fr)] md:items-baseline md:gap-8">
-                <span className="type-telemetry text-crimson">{item.index}</span>
+                <span className="type-telemetry text-azure">{item.index}</span>
                 <h3 className="type-heading text-2xl text-cream md:text-3xl">{item.title}</h3>
                 <div>
                   <p className="max-w-[52ch] text-base leading-relaxed text-cream-dim">{item.body}</p>

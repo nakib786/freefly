@@ -62,7 +62,10 @@ function CarRig({
     speedRef.current = drive.speed;
 
     if (wheels.current) {
-      spin.current += (drive.speed / radius.current) * dt;
+      // Negative: rotating a wheel positively about +X carries its top toward
+      // +Z, and a rolling wheel's top travels the way the car does — so forward
+      // (−Z, per keyframes.ts) is a negative spin.
+      spin.current -= (drive.speed / radius.current) * dt;
       const steer = THREE.MathUtils.degToRad(drive.steer);
       for (const key of ['frontLeft', 'frontRight', 'rearLeft', 'rearRight'] as const) {
         const wheel = wheels.current[key];
@@ -111,10 +114,10 @@ export default function DriveScene({ capability }: Props) {
       // scroll gesture or a tap on a link sitting above it.
       style={{ pointerEvents: 'none' }}
     >
-      <color attach="background" args={['#090708']} />
+      <color attach="background" args={['#060809']} />
       {/* Fog hides the far edge of the ground plane so the road reads as
           endless rather than as a 90m square floating in the dark. */}
-      <fog attach="fog" args={['#090708', 14, 46]} />
+      <fog attach="fog" args={['#060809', 14, 46]} />
 
       <Suspense fallback={null}>
         <CarRig capability={capability} driveRef={drive} speedRef={speed} />

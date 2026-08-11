@@ -75,7 +75,7 @@ export function Nav() {
           </span>
           <a
             href={BUSINESS.phoneHref}
-            className="type-telemetry bg-crimson px-4 py-3 text-cream transition-colors hover:bg-crimson-bright"
+            className="type-telemetry bg-azure px-4 py-3 text-cream transition-colors hover:bg-azure-bright"
           >
             Call {BUSINESS.phone}
           </a>
@@ -86,7 +86,7 @@ export function Nav() {
           announcing a percentage on every scroll tick is noise. */}
       <div aria-hidden className="h-px w-full bg-ink-700">
         <div
-          className="h-full bg-crimson"
+          className="h-full bg-azure"
           style={{ width: `${progress * 100}%`, transition: 'width 120ms linear' }}
         />
       </div>

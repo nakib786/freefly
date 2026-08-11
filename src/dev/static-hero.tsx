@@ -32,8 +32,8 @@ function Scene() {
       camera={{ fov: 32, near: 0.1, far: 220 }}
       style={{ width: '100vw', height: '100vh' }}
     >
-      <color attach="background" args={['#090708']} />
-      <fog attach="fog" args={['#090708', 14, 46]} />
+      <color attach="background" args={['#060809']} />
+      <fog attach="fog" args={['#060809', 14, 46]} />
       <Suspense fallback={null}>
         <CarModel url="/models/tesla-model-3.glb" />
         <Road speedRef={stillSpeed} />

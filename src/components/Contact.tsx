@@ -16,7 +16,7 @@ import { Readout, Scrim, Section } from '@/components/primitives';
 import { BUSINESS, SOCIALS } from '@/data/business';
 
 const FIELD =
-  'w-full border border-ink-600 bg-ink-900/70 px-4 py-3 text-cream placeholder:text-ink-500 transition-colors focus:border-crimson focus:outline-none';
+  'w-full border border-ink-600 bg-ink-900/70 px-4 py-3 text-cream placeholder:text-ink-500 transition-colors focus:border-azure focus:outline-none';
 
 type Status =
   | { state: 'idle' }
@@ -101,7 +101,7 @@ export function Contact() {
                     rel="noopener noreferrer"
                     className="group flex items-baseline gap-3"
                   >
-                    <span className="type-heading text-lg text-cream transition-colors group-hover:text-crimson-bright">
+                    <span className="type-heading text-lg text-cream transition-colors group-hover:text-azure-bright">
                       {social.label}
                     </span>
                     <span className="type-telemetry text-cream-faint">{social.handle}</span>
@@ -119,7 +119,7 @@ export function Contact() {
           method="post"
           onSubmit={submit}
         >
-          <p className="type-telemetry text-crimson">Enquiry</p>
+          <p className="type-telemetry text-azure">Enquiry</p>
 
           {/* Honeypot. Hidden from sight and from screen readers, and taken out
               of the tab order, so no real user can fill it — but bots that
@@ -167,14 +167,14 @@ export function Contact() {
           <button
             type="submit"
             disabled={status.state === 'sending'}
-            className="type-telemetry bg-crimson px-6 py-4 text-cream transition-colors hover:bg-crimson-bright disabled:cursor-not-allowed disabled:opacity-60"
+            className="type-telemetry bg-azure px-6 py-4 text-cream transition-colors hover:bg-azure-bright disabled:cursor-not-allowed disabled:opacity-60"
           >
             {status.state === 'sending' ? 'Sending…' : 'Send enquiry'}
           </button>
 
           {/* aria-live so the outcome is announced, not just shown. */}
           <p
-            className={`type-telemetry ${status.state === 'error' ? 'text-crimson-bright' : 'text-cream-faint'}`}
+            className={`type-telemetry ${status.state === 'error' ? 'text-azure-bright' : 'text-cream-faint'}`}
             role="status"
             aria-live="polite"
           >

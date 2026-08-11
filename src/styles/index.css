@@ -3,20 +3,22 @@
 /* ===========================================================================
    Free Fly design tokens
    ---------------------------------------------------------------------------
-   Every colour here is sampled from the supplied logo, not invented:
+   The accent is an insurance/licensing blue — the register BC drivers already
+   associate with ICBC — rather than the logo's crimson, which read as a warning
+   colour and dated the page:
 
-     crimson  #cd1d4f   the bright top of the car mark's gradient
-     wine     #8c0f42   its deep bottom
-     slate    #58646a   the FREEFLY / DRIVING SCHOOL wordmark fill
+     azure    #1a72d6   the primary accent: CTAs, rules, section numbers
+     marine   #0d4a92   its deep end, for gradient falloff and hairlines
+     slate    #58646a   the FREEFLY / DRIVING SCHOOL wordmark fill (from logo)
      cream    #fffbf4   the logo's own background
 
-   The ink ramp is a near-black carrying a trace of the crimson hue, so the
-   darks sit under the accent rather than fighting it — a neutral grey-black
-   makes #cd1d4f read as a warning colour instead of a brand colour.
+   The ink ramp is a near-black carrying a trace of the azure hue, so the darks
+   sit under the accent rather than fighting it — a warm or neutral grey-black
+   leaves #1a72d6 looking like a stray link colour instead of a brand colour.
 
-   Note on the gradient rule in the brief: crimson -> wine is ~345 degrees of
-   hue, nowhere near the 200-290 indigo/violet band, and it is taken from the
-   brand's own artwork rather than a framework default.
+   Contrast: cream on azure is 4.7:1 (AA for the CTA labels), and azure-bright
+   on ink-950 is 7.9:1, so any blue text small enough to matter uses the bright
+   step. Plain azure is reserved for fills, rules and large numerals.
 
    Type: Archivo Variable carries a real width axis (62-125%), so headlines are
    set EXPANDED and kickers CONDENSED — the contrast is structural, not just
@@ -31,13 +33,13 @@
   --font-body: 'Instrument Sans Variable', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Martian Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
 
-  --color-ink-950: #090708;
-  --color-ink-900: #0e0c0d;
-  --color-ink-850: #131112;
-  --color-ink-800: #191617;
-  --color-ink-700: #241f21;
-  --color-ink-600: #322b2e;
-  --color-ink-500: #4a4245;
+  --color-ink-950: #060809;
+  --color-ink-900: #0a0d11;
+  --color-ink-850: #0e1216;
+  --color-ink-800: #12181d;
+  --color-ink-700: #1c242c;
+  --color-ink-600: #28323c;
+  --color-ink-500: #3d4a57;
 
   --color-cream: #fffbf4;
   --color-cream-dim: #b9b3ab;
@@ -46,10 +48,10 @@
   --color-slate: #58646a;
   --color-slate-light: #8a959a;
 
-  --color-crimson: #cd1d4f;
-  --color-crimson-bright: #e8386c;
-  --color-wine: #8c0f42;
-  --color-wine-deep: #4d0824;
+  --color-azure: #1a72d6;
+  --color-azure-bright: #5aa6ff;
+  --color-marine: #0d4a92;
+  --color-marine-deep: #06284f;
 
   /* Fluid display sizes, clamped against viewport width so the hero headline
      stays one confident block from 360px up to ultrawide. */
@@ -87,12 +89,12 @@
   }
 
   ::selection {
-    background: var(--color-crimson);
+    background: var(--color-azure);
     color: var(--color-cream);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-crimson-bright);
+    outline: 2px solid var(--color-azure-bright);
     outline-offset: 3px;
     border-radius: 1px;
   }

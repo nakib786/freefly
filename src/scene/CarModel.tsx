@@ -178,7 +178,10 @@ function buildWheelGroups(root: THREE.Object3D): WheelGroups | null {
     rearRight: [],
   };
   for (const part of parts) {
-    const front = part.centre.z > mid.z;
+    // The nose points along −Z (keyframes.ts), so the front pair is the one
+    // with the *smaller* z. Getting this backwards steers the rear wheels,
+    // which reads as the car crabbing rather than turning.
+    const front = part.centre.z < mid.z;
     const left = part.centre.x < mid.x;
     buckets[`${front ? 'front' : 'rear'}${left ? 'Left' : 'Right'}` as keyof WheelGroups].push(part);
   }

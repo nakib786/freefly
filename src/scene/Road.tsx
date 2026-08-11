@@ -35,7 +35,7 @@ function createRoadTexture(simplified: boolean) {
   const ctx = canvas.getContext('2d')!;
 
   // Asphalt base.
-  ctx.fillStyle = '#0c0a0b';
+  ctx.fillStyle = '#0a0d11';
   ctx.fillRect(0, 0, size, size);
 
   // Aggregate speckle. Wrapped deliberately at the edges so the repeat seam
@@ -83,10 +83,17 @@ export function Road({ speedRef, simplified = false }: Props) {
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 1 / 20);
-    // The car's nose points along −Z, so the road must travel toward +Z.
     // Divided by TILE because texture offset is in repeats, not metres.
     offset.current = (offset.current + ((speedRef.current ?? 0) * dt) / TILE) % 1;
-    texture.offset.y = -offset.current * texture.repeat.y;
+    // The car's nose points along −Z (keyframes.ts), so the ground has to flow
+    // toward +Z for the car to read as moving forward.
+    //
+    // Sign chain, because it inverts twice and guessing it gets you a car that
+    // cruises backwards: the plane is rotated −90° about X, which maps texture
+    // +V onto world −Z. Raising `offset.y` samples from higher V, so the pattern
+    // appears to travel toward −V — that is world +Z. Increasing offset is
+    // therefore forward, and the negation that used to be here was the bug.
+    texture.offset.y = offset.current * texture.repeat.y;
   });
 
   return (

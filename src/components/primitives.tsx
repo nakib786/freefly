@@ -61,7 +61,7 @@ export function Section({ id, index, eyebrow, children, className = '' }: Sectio
           className="reveal flex items-baseline gap-4 pt-6 pb-10 md:pt-8 md:pb-14"
           data-reveal
         >
-          <span className="type-telemetry text-crimson">{index}</span>
+          <span className="type-telemetry text-azure">{index}</span>
           <span className="type-telemetry text-cream-faint">{eyebrow}</span>
         </header>
         {children}
@@ -83,12 +83,12 @@ export function Section({ id, index, eyebrow, children, className = '' }: Sectio
  * lose to the inline style and silently do nothing.
  */
 const SCRIM_GRADIENTS = {
-  left: 'radial-gradient(120% 90% at 0% 50%, rgba(9,7,8,0.94) 0%, rgba(9,7,8,0.78) 38%, rgba(9,7,8,0) 74%)',
+  left: 'radial-gradient(120% 90% at 0% 50%, rgba(6,8,9,0.94) 0%, rgba(6,8,9,0.78) 38%, rgba(6,8,9,0) 74%)',
   right:
-    'radial-gradient(120% 90% at 100% 50%, rgba(9,7,8,0.94) 0%, rgba(9,7,8,0.78) 38%, rgba(9,7,8,0) 74%)',
-  top: 'linear-gradient(to bottom, rgba(9,7,8,0.95) 0%, rgba(9,7,8,0.8) 55%, rgba(9,7,8,0.35) 100%)',
+    'radial-gradient(120% 90% at 100% 50%, rgba(6,8,9,0.94) 0%, rgba(6,8,9,0.78) 38%, rgba(6,8,9,0) 74%)',
+  top: 'linear-gradient(to bottom, rgba(6,8,9,0.95) 0%, rgba(6,8,9,0.8) 55%, rgba(6,8,9,0.35) 100%)',
   bottom:
-    'linear-gradient(to top, rgba(9,7,8,0.5) 0%, rgba(9,7,8,0.88) 45%, rgba(9,7,8,0.96) 100%)',
+    'linear-gradient(to top, rgba(6,8,9,0.5) 0%, rgba(6,8,9,0.88) 45%, rgba(6,8,9,0.96) 100%)',
 } as const;
 
 /**
@@ -98,7 +98,7 @@ const SCRIM_GRADIENTS = {
  * as texture behind the lower third and nothing more.
  */
 const MOBILE_SCRIM =
-  'linear-gradient(to bottom, rgba(9,7,8,0.97) 0%, rgba(9,7,8,0.9) 45%, rgba(9,7,8,0.72) 100%)';
+  'linear-gradient(to bottom, rgba(6,8,9,0.97) 0%, rgba(6,8,9,0.9) 45%, rgba(6,8,9,0.72) 100%)';
 
 export function Scrim({ from = 'left' }: { from?: keyof typeof SCRIM_GRADIENTS }) {
   return (
@@ -124,7 +124,7 @@ export function Readout({ label, value, href }: { label: string; value: string; 
     <div className="flex flex-col gap-2">
       <span className="type-telemetry text-cream-faint">{label}</span>
       {href ? (
-        <a href={href} className="text-cream transition-colors hover:text-crimson-bright">
+        <a href={href} className="text-cream transition-colors hover:text-azure-bright">
           {body}
         </a>
       ) : (
@@ -141,7 +141,7 @@ export function Readout({ label, value, href }: { label: string; value: string; 
  */
 export function PlaceholderNote({ children }: { children: ReactNode }) {
   return (
-    <p className="type-telemetry inline-flex items-center gap-2 border border-dashed border-crimson/50 px-3 py-2 text-crimson-bright">
+    <p className="type-telemetry inline-flex items-center gap-2 border border-dashed border-azure/50 px-3 py-2 text-azure-bright">
       <span aria-hidden>◆</span>
       {children}
     </p>

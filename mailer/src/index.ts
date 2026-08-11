@@ -82,7 +82,7 @@ type Enquiry = { name: string; phone: string; email: string; plan: string; messa
  * Deliberately built to match the house style already used for the other
  * Aurora client sites (The Ninth House): logo card on a tinted ground, a
  * labelled detail table, and the Aurora attribution in the footer. The palette
- * and type are Free Fly's own — crimson/wine/cream, mono for labels — so the
+ * and type are Free Fly's own — azure/marine/cream, mono for labels — so the
  * email reads as the same system as the website it came from.
  *
  * Table-based layout with inline styles because that is what actually survives
@@ -112,7 +112,7 @@ function renderHtml(enquiry: Enquiry, meta: { when: string; country: string }) {
       </td></tr>
 
       <tr><td style="padding:32px 32px 8px">
-        <p style="margin:0 0 10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#cd1d4f">New lesson enquiry</p>
+        <p style="margin:0 0 10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#1a72d6">New lesson enquiry</p>
         <h1 style="margin:0;font-size:26px;line-height:1.15;letter-spacing:-.02em;color:#16121a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-weight:700">${escapeHtml(enquiry.name)}</h1>
       </td></tr>
 
@@ -131,7 +131,7 @@ function renderHtml(enquiry: Enquiry, meta: { when: string; country: string }) {
         enquiry.message
           ? `<tr><td style="padding:24px 32px 0">
         <p style="margin:0 0 8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a837c">Message</p>
-        <div style="border-left:3px solid #cd1d4f;padding:2px 0 2px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:15px;line-height:1.6;color:#2a2429;white-space:pre-wrap">${escapeHtml(enquiry.message)}</div>
+        <div style="border-left:3px solid #1a72d6;padding:2px 0 2px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;font-size:15px;line-height:1.6;color:#2a2429;white-space:pre-wrap">${escapeHtml(enquiry.message)}</div>
       </td></tr>`
           : ''
       }
@@ -139,15 +139,15 @@ function renderHtml(enquiry: Enquiry, meta: { when: string; country: string }) {
       ${
         enquiry.phone
           ? `<tr><td style="padding:28px 32px 0">
-        <a href="tel:${escapeHtml(enquiry.phone.replace(/[^\d+]/g, ''))}" style="display:inline-block;background:#cd1d4f;color:#ffffff;text-decoration:none;padding:13px 22px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700">Call ${escapeHtml(enquiry.phone)}</a>
+        <a href="tel:${escapeHtml(enquiry.phone.replace(/[^\d+]/g, ''))}" style="display:inline-block;background:#1a72d6;color:#ffffff;text-decoration:none;padding:13px 22px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700">Call ${escapeHtml(enquiry.phone)}</a>
       </td></tr>`
           : ''
       }
 
       <tr><td style="padding:28px 32px 32px">
         <p style="margin:24px 0 0;padding-top:18px;border-top:1px solid #ece7e0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.7;letter-spacing:.08em;color:#a8a099">
-          Sent from <a href="${SITE}" style="color:#8c0f42;text-decoration:none">new.freeflydriving.ca</a> · ${escapeHtml(meta.country)} · ${escapeHtml(meta.when)}<br />
-          Delivered by <a href="https://aurorabusiness.ca" style="color:#8c0f42;text-decoration:none">Aurora N&amp;N Business Solutions Inc.</a>
+          Sent from <a href="${SITE}" style="color:#0d4a92;text-decoration:none">new.freeflydriving.ca</a> · ${escapeHtml(meta.country)} · ${escapeHtml(meta.when)}<br />
+          Delivered by <a href="https://aurorabusiness.ca" style="color:#0d4a92;text-decoration:none">Aurora N&amp;N Business Solutions Inc.</a>
         </p>
       </td></tr>
 

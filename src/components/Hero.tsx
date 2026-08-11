@@ -17,7 +17,7 @@ export function Hero() {
       <Scrim />
 
       <div className="mx-auto w-full max-w-[110rem]">
-        <p className="reveal type-telemetry mb-6 text-crimson" data-reveal>
+        <p className="reveal type-telemetry mb-6 text-azure" data-reveal>
           {BUSINESS.licenceClasses.join(' & ')} · {BUSINESS.region}
         </p>
 
@@ -28,7 +28,7 @@ export function Hero() {
         <h1 className="reveal type-display text-display-lg text-cream" data-reveal>
           <span className="block">Learn to</span>
           <span className="block">drive in a</span>
-          <span className="block text-crimson">Tesla</span>
+          <span className="block text-azure">Tesla</span>
         </h1>
 
         <div className="mt-10 grid gap-10 md:mt-14 md:grid-cols-[minmax(0,32rem)_auto] md:items-end md:gap-16">
@@ -41,13 +41,13 @@ export function Hero() {
           <div className="reveal flex flex-wrap items-center gap-3" data-reveal>
             <a
               href={BUSINESS.phoneHref}
-              className="type-telemetry bg-cream px-6 py-4 text-ink-950 transition-colors hover:bg-crimson hover:text-cream"
+              className="type-telemetry bg-cream px-6 py-4 text-ink-950 transition-colors hover:bg-azure hover:text-cream"
             >
               Book a lesson
             </a>
             <a
               href="#lessons"
-              className="type-telemetry border border-ink-600 px-6 py-4 text-cream transition-colors hover:border-crimson hover:text-crimson-bright"
+              className="type-telemetry border border-ink-600 px-6 py-4 text-cream transition-colors hover:border-azure hover:text-azure-bright"
             >
               See plans &amp; prices
             </a>
@@ -66,9 +66,9 @@ export function Hero() {
             href={REVIEW_SUMMARY.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="type-telemetry text-cream transition-colors hover:text-crimson-bright"
+            className="type-telemetry text-cream transition-colors hover:text-azure-bright"
           >
-            <span className="text-crimson">★ {REVIEW_SUMMARY.rating.toFixed(1)}</span> ·{' '}
+            <span className="text-azure">★ {REVIEW_SUMMARY.rating.toFixed(1)}</span> ·{' '}
             {REVIEW_SUMMARY.count} {REVIEW_SUMMARY.source} reviews
           </a>
           <span className="type-telemetry text-cream-dim">

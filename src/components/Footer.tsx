@@ -12,9 +12,28 @@ const MODEL_CREDIT = {
   licenceUrl: 'https://creativecommons.org/licenses/by/4.0/',
 };
 
+/**
+ * The camera's last keyframe parks the car centred and low, directly behind
+ * this footer — so a solid plate here blacks out the one framing the whole
+ * scroll has been driving toward. The footer gets a scrim instead, like every
+ * section above it: clear enough at the top for the parked car and its
+ * headlights to read, firming up under the smallest legal type.
+ *
+ * It opens at 0.32 rather than 0 because Contact's `top` scrim leaves off at
+ * 0.35 — starting from nothing would put the page's clearest band at the seam
+ * and make the join look like a rendering fault instead of a fade.
+ */
+const FOOTER_SCRIM =
+  'linear-gradient(to bottom, rgba(6,8,9,0.32) 0%, rgba(6,8,9,0.62) 22%, rgba(6,8,9,0.86) 50%, rgba(6,8,9,0.93) 100%)';
+
 export function Footer() {
   return (
-    <footer className="rule-t gutter bg-ink-950 pt-16 pb-10">
+    <footer className="rule-t gutter relative pt-16 pb-10">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{ background: FOOTER_SCRIM }}
+      />
       <div className="mx-auto max-w-[110rem]">
         <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-20">
           <div>
@@ -30,12 +49,12 @@ export function Footer() {
               <p className="type-telemetry mb-4 text-cream-faint">Contact</p>
               <ul className="flex flex-col gap-2 text-sm">
                 <li>
-                  <a href={BUSINESS.phoneHref} className="text-cream hover:text-crimson-bright">
+                  <a href={BUSINESS.phoneHref} className="text-cream hover:text-azure-bright">
                     {BUSINESS.phone}
                   </a>
                 </li>
                 <li>
-                  <a href={BUSINESS.emailHref} className="text-cream hover:text-crimson-bright">
+                  <a href={BUSINESS.emailHref} className="text-cream hover:text-azure-bright">
                     {BUSINESS.email}
                   </a>
                 </li>
@@ -50,7 +69,7 @@ export function Footer() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-cream hover:text-crimson-bright"
+                      className="text-cream hover:text-azure-bright"
                     >
                       {social.label}
                     </a>
@@ -73,7 +92,7 @@ export function Footer() {
               href={MODEL_CREDIT.source}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cream-dim underline underline-offset-4 hover:text-crimson-bright"
+              className="text-cream-dim underline underline-offset-4 hover:text-azure-bright"
             >
               &ldquo;{MODEL_CREDIT.title}&rdquo;
             </a>{' '}
@@ -82,7 +101,7 @@ export function Footer() {
               href={MODEL_CREDIT.licenceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cream-dim underline underline-offset-4 hover:text-crimson-bright"
+              className="text-cream-dim underline underline-offset-4 hover:text-azure-bright"
             >
               {MODEL_CREDIT.licence}
             </a>
