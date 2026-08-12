@@ -96,7 +96,11 @@ function CarRig({
 
   return (
     <group ref={body}>
-      <CarModel url={capability.modelUrl} onWheels={onWheels} />
+      <CarModel
+        url={capability.modelUrl}
+        simplified={capability.tier === 'lite'}
+        onWheels={onWheels}
+      />
     </group>
   );
 }
@@ -116,7 +120,15 @@ export default function DriveScene({ capability }: Props) {
       shadows={capability.shadows}
       dpr={[1, capability.maxDpr]}
       gl={{
-        antialias: !simplified,
+        // MSAA on both tiers. Turning it off was the wrong economy on a phone:
+        // mobile GPUs are tile-based, so multisampling happens inside tile
+        // memory and resolves on write-out — it does not multiply bandwidth the
+        // way it does on a desktop immediate-mode GPU. What it buys is the
+        // whole silhouette of a white car against a near-black page, plus every
+        // panel-gap and pillar edge, holding still instead of crawling as the
+        // camera moves. Aliased edges on a moving object read as the surface
+        // boiling, which is most of what "melting" describes.
+        antialias: true,
         powerPreference: 'high-performance',
         toneMapping: THREE.ACESFilmicToneMapping,
         // ACES rolls highlights off hard, which on a white car against a

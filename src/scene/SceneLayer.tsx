@@ -65,7 +65,8 @@ type SceneLayerProps = {
 
 export function SceneLayer({ hold = false }: SceneLayerProps) {
   const [capability, setCapability] = useState<Capability | null>(null);
-  const demoted = useRef(false);
+  const demotedFull = useRef(false);
+  const demotedLite = useRef(false);
 
   // Warm the scene chunk immediately, even while held. `hold` exists only to
   // stop GLTFLoader racing the boot preloader for the same GLB — it should not
@@ -122,15 +123,36 @@ export function SceneLayer({ hold = false }: SceneLayerProps) {
 
   // Real-world frame rate check. The static probe in capability.ts catches the
   // obvious cases; this catches a device that looks fine on paper and isn't.
+  //
+  // Two rungs, because there are two different things to give up. From 'full'
+  // the answer is the low-power path itself, at the DPR a machine that has just
+  // proven it cannot cope should be asked for. From 'lite' — where the model,
+  // the lighting and the glass are already as cheap as they get — the only dial
+  // left is resolution: phones start at 2 on the assumption that a dense screen
+  // is worth paying for, and this is what walks that back if it wasn't.
+  //
+  // A rung fires at most once each, and they are separate refs on purpose: a
+  // machine demoted out of 'full' is still allowed the DPR cut afterwards.
   useEffect(() => {
-    if (!capability || capability.tier !== 'full') return;
-    return watchFrameRate(() => {
-      if (demoted.current) return;
-      demoted.current = true;
-      setCapability((c) =>
-        c ? { ...c, tier: 'lite', modelUrl: '/models/tesla-model-3-low.glb', shadows: false, maxDpr: 1.5 } : c,
-      );
-    });
+    if (!capability) return;
+
+    if (capability.tier === 'full' && !demotedFull.current) {
+      return watchFrameRate(() => {
+        demotedFull.current = true;
+        setCapability((c) =>
+          c
+            ? { ...c, tier: 'lite', modelUrl: '/models/tesla-model-3-low.glb', shadows: false, maxDpr: 1.5 }
+            : c,
+        );
+      });
+    }
+
+    if (capability.tier === 'lite' && !demotedLite.current) {
+      return watchFrameRate(() => {
+        demotedLite.current = true;
+        setCapability((c) => (c && c.maxDpr > 1.25 ? { ...c, maxDpr: 1.25 } : c));
+      });
+    }
   }, [capability]);
 
   if (!capability) return <div className="fixed inset-0 -z-10 bg-ink-950" />;

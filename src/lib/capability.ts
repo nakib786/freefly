@@ -98,7 +98,7 @@ function computeCapability(): Capability {
       staticCamera: forced === 'none' || reducedMotion,
       modelUrl: forced === 'full' ? HIGH_LOD : LOW_LOD,
       shadows: forced === 'full',
-      maxDpr: forced === 'full' ? 2 : 1.5,
+      maxDpr: forced === 'none' ? 1 : 2,
     };
   }
 
@@ -138,7 +138,14 @@ function computeCapability(): Capability {
       staticCamera: reducedMotion,
       modelUrl: LOW_LOD,
       shadows: false,
-      maxDpr: 1.5,
+      // 2, not 1.5. Phones are where pixel ratios are highest — a 3x screen
+      // rendering at 1.5 is a quarter of the samples, then bilinearly stretched
+      // over the real pixels, and a car is mostly thin high-contrast edges that
+      // do not survive that. The budget for it comes from the low-power path no
+      // longer running a transmission pass (see CarModel's glass treatment),
+      // which cost a full extra render of the scene every frame. If a device
+      // still cannot hold the rate, SceneLayer walks this back down.
+      maxDpr: 2,
     };
   }
 

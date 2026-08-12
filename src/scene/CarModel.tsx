@@ -83,6 +83,22 @@ const PAINT = {
   clearcoat: 1,
   clearcoatRoughness: 0.06,
   envMapIntensity: 1.15,
+  /**
+   * The panels are large, smooth and near-white, which is the exact shape of
+   * gradient an 8-bit output buffer cannot represent: the falloff across the
+   * bonnet crosses maybe a dozen quantisation steps over hundreds of pixels, so
+   * it lands as visible bands with mushy, wandering edges rather than a smooth
+   * ramp. Desktop hides it — a 2x DPR buffer downsampled into a physical pixel
+   * averages four samples and dithers the step by accident, and MSAA helps
+   * further. A phone at half its native DPR with no MSAA has no such luck, and
+   * the bands are what "melting" looks like on a moving car.
+   *
+   * three.js's dithering flag adds a sub-LSB ordered noise in the fragment
+   * shader, which is the standard fix and costs one instruction. On for both
+   * tiers: it is free, and the desktop buffer being able to mask the problem is
+   * not a reason to ship the problem.
+   */
+  dithering: true,
 };
 
 const isPaint = (name: string) => /^primary/.test(name);
@@ -132,7 +148,7 @@ const TYRE = {
   envMapIntensity: 0.45,
 };
 
-function treatMaterial(src: THREE.Material): THREE.Material {
+function treatMaterial(src: THREE.Material, simplified: boolean): THREE.Material {
   const name = src.name ?? '';
   const std = src as THREE.MeshStandardMaterial;
 
@@ -154,6 +170,32 @@ function treatMaterial(src: THREE.Material): THREE.Material {
   }
 
   if (isGlass(name)) {
+    // Real refraction on desktop; plain tinted alpha on the low-power path.
+    //
+    // `transmission` is not a shading flag, it is a second render of the whole
+    // scene: three.js renders everything else into a transmission render target
+    // and the glass samples it, blurred by roughness. On mobile that buffer is
+    // allocated at a fraction of the drawing buffer — which is itself already
+    // capped at 1.5 DPR — and then sampled through a curved windscreen. The
+    // result is a smeared, wobbling image of the car's own roof and pillars
+    // dragged across the greenhouse as the camera moves, which is the melt.
+    //
+    // Dropping it also removes an entire extra scene pass per frame, which is
+    // the single most expensive thing this scene asked of a phone. The tint,
+    // roughness and env reflection all survive; what is lost is seeing the
+    // headrests through the rear window at 1.5 DPR, which nobody was.
+    if (simplified) {
+      return new THREE.MeshPhysicalMaterial({
+        name,
+        color: new THREE.Color('#0d1218'),
+        metalness: 0,
+        roughness: 0.06,
+        transparent: true,
+        opacity: 0.86,
+        envMapIntensity: 1.6,
+        dithering: true,
+      });
+    }
     return new THREE.MeshPhysicalMaterial({
       name,
       color: new THREE.Color('#0d1218'),
@@ -398,10 +440,12 @@ function buildWheelGroups(root: THREE.Object3D): WheelGroups | null {
 type CarModelProps = {
   url: string;
   wireframe?: boolean;
+  /** Low-power path: swaps refractive glass for tinted alpha. See treatMaterial. */
+  simplified?: boolean;
   onWheels?: (wheels: WheelGroups | null) => void;
 };
 
-export function CarModel({ url, wireframe = false, onWheels }: CarModelProps) {
+export function CarModel({ url, wireframe = false, simplified = false, onWheels }: CarModelProps) {
   const { scene } = useCarGltf(url);
 
   const { car, wheels } = useMemo(() => {
@@ -417,7 +461,7 @@ export function CarModel({ url, wireframe = false, onWheels }: CarModelProps) {
       mesh.frustumCulled = true;
       const list = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
       const next = list.map((m) => {
-        if (!treated.has(m)) treated.set(m, treatMaterialSafe(m));
+        if (!treated.has(m)) treated.set(m, treatMaterialSafe(m, simplified));
         return treated.get(m)!;
       });
       mesh.material = Array.isArray(mesh.material) ? next : next[0];
@@ -438,7 +482,7 @@ export function CarModel({ url, wireframe = false, onWheels }: CarModelProps) {
     car.updateMatrixWorld(true);
 
     return { car, wheels: buildWheelGroups(car) };
-  }, [scene]);
+  }, [scene, simplified]);
 
   useEffect(() => {
     onWheels?.(wheels);
@@ -457,9 +501,9 @@ export function CarModel({ url, wireframe = false, onWheels }: CarModelProps) {
 }
 
 /** Guards against a treatment throwing on an unexpected material class. */
-function treatMaterialSafe(m: THREE.Material) {
+function treatMaterialSafe(m: THREE.Material, simplified: boolean) {
   try {
-    return treatMaterial(m);
+    return treatMaterial(m, simplified);
   } catch {
     return m;
   }
