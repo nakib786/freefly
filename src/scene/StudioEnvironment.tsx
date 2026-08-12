@@ -23,7 +23,15 @@ type Props = {
 export function StudioEnvironment({ simplified = false }: Props) {
   return (
     <>
-      <Environment resolution={simplified ? 128 : 256} environmentIntensity={1.45}>
+      {/* 256 on both paths. The body is clearcoat over metalness 0.55 at
+          roughness 0.28 — near enough a mirror that the environment cube *is*
+          the paint, and at 128 the strip lights resolve as a handful of soft
+          blobs smeared across the hood. That is the "watercolour" bonnet on
+          mobile: not a material or a mesh problem, a reflection sampled from
+          too few texels. The cube is rendered and pre-filtered once at mount,
+          not per frame, so the saving it bought was never on the hot path;
+          `simplified` still drops two lightformers and all shadow work. */}
+      <Environment resolution={256} environmentIntensity={1.45}>
         {/* Deep cold base so unlit surfaces never go flat black. */}
         <Lightformer
           form="rect"

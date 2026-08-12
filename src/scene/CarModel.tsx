@@ -10,7 +10,7 @@
  * file. src/data/credits.ts is the single copy of those facts — edit them there.
  *
  * Source GLB: 684,315 tris / 394,055 verts / 176 meshes / 58 materials, 21.6 MB.
- * Shipped GLB: 366,721 tris, 1.49 MB (desktop) / 291,534 tris, 1.18 MB (mobile).
+ * Shipped GLB: 366,721 tris, 1.49 MB (desktop) / 343,798 tris, 1.29 MB (mobile).
  *
  * Produced by `npm run model:optimize` (scripts/optimize-model.mjs), which is
  * the authoritative record of the pipeline. In short, per LOD:
@@ -19,7 +19,7 @@
  *   2. weld()   — index and merge coincident vertices (required before simplify)
  *   3. simplifyPrimitive() per primitive, meshoptimizer, ratio+error by tier:
  *        shell  (paint, glass, lights)  not decimated, either LOD
- *        wheels (rims, tyres, hubs)     not decimated / 0.45 on mobile
+ *        wheels (rims, tyres, hubs)     not decimated, either LOD
  *        trim   (black plastics, misc)  ratio 0.18 / 0.08
  *        cabin  (seats, carpet, wheel)  ratio 0.08 / 0.04
  *        hidden (chassis, suspension)   ratio 0.06 / 0.03
@@ -112,17 +112,43 @@ const RIM = {
   envMapIntensity: 1.0,
 };
 
+/**
+ * The tyre carcass slots — sidewall, tread and barrel (`wheels.0` ships no map
+ * at all, `wheels.2` and `wheels.3` average 28/255).
+ *
+ * Stated outright rather than inherited from the maps, and the metal/roughness
+ * maps are dropped, because rubber has exactly one failure mode worth guarding:
+ * anything that lowers its roughness turns a large, curved, dark surface into a
+ * mirror pointed at a 3.4-intensity overhead softbox, and it renders white. The
+ * mobile LOD used to do that via decimated UVs. That specific cause is fixed in
+ * the pipeline, but a tyre has no business sampling a gloss map either way.
+ */
+const isTyre = (name: string) => /^wheels\.[023](\.|$)/.test(name);
+
+const TYRE = {
+  color: new THREE.Color('#16181b'),
+  metalness: 0,
+  roughness: 0.92,
+  envMapIntensity: 0.45,
+};
+
 function treatMaterial(src: THREE.Material): THREE.Material {
   const name = src.name ?? '';
   const std = src as THREE.MeshStandardMaterial;
 
   if (isPaint(name)) {
-    // Keep whatever base-colour/normal detail the panel carried (the sill and
-    // door slots have maps with panel detail in them) but drive colour and
-    // finish from PAINT, so `primary.004` — which exports as vivid chartreuse —
-    // can't leak a green door panel into the render.
+    // Colour, finish AND base map all come from PAINT — the import is not
+    // trusted for any of them. `primary.004` exports as vivid chartreuse, and
+    // the two slots that do carry a base-colour map (`primary.001` on the
+    // sills, `primary.002` on all four doors) are dark, high-contrast atlases
+    // — mean luminance ~50/255 at a standard deviation of ~96. glTF multiplies
+    // that into the base colour, so keeping it stained the white paint in
+    // mottled grey patches, and at mobile texture sizes and mip levels the
+    // patches blur into each other: the "watercolour" panels. The panel gaps
+    // and shut lines are modelled geometry — the shell is never decimated — so
+    // dropping the map costs no detail. normalMap is kept; no paint slot in
+    // this export actually ships one, but a re-export might.
     const paint = new THREE.MeshPhysicalMaterial({ name, ...PAINT });
-    paint.map = std.map ?? null;
     paint.normalMap = std.normalMap ?? null;
     return paint;
   }
@@ -139,6 +165,17 @@ function treatMaterial(src: THREE.Material): THREE.Material {
       transparent: true,
       envMapIntensity: 1.6,
     });
+  }
+
+  if (isTyre(name)) {
+    std.color.copy(TYRE.color);
+    std.map = null;
+    std.metalnessMap = null;
+    std.roughnessMap = null;
+    std.metalness = TYRE.metalness;
+    std.roughness = TYRE.roughness;
+    std.envMapIntensity = TYRE.envMapIntensity;
+    return std;
   }
 
   if (isRim(name)) {

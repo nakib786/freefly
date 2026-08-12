@@ -147,10 +147,17 @@ const LODS = {
       // screen far longer than it ever is on desktop. The shell is spared here
       // too; the mobile LOD earns its size back on textures and interior.
       shell: { ratio: 1 },
-      // Still cut, but with the border locked so the arch lip and tyre edge
-      // keep their outline. Rubber and dark rims hide interpolation error that
-      // clearcoat magnifies, so this tier tolerates decimation.
-      wheels: { ratio: 0.45, error: 0.002, lockBorder: true },
+      // NOT cut, at either LOD. The earlier 0.45 here is what turned the tyres
+      // white on mobile. `wheels.6` is a 37k-triangle primitive whose base
+      // colour map is an atlas — white rim face on black rubber — so the tyre
+      // reads black only for as long as its UVs keep pointing at the black half
+      // of that atlas. Simplification welds by position and remaps the other
+      // attributes onto the survivors, which drags UVs (and the roughness they
+      // sample) across the rim/rubber seam: the tread picks up rim texels and a
+      // near-mirror roughness, and then reflects the overhead softbox. That is
+      // the white tyre. It is invisible on desktop purely because this tier was
+      // already spared there. lockBorder does not help — the seam is interior.
+      wheels: { ratio: 1 },
       trim: { ratio: 0.08, error: 0.01 },
       cabin: { ratio: 0.04, error: 0.04 },
       hidden: { ratio: 0.03, error: 0.05 },
