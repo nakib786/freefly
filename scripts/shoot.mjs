@@ -141,7 +141,26 @@ try {
       }, sessionId);
       await sleep(220);
     }
-    await sleep(2500);
+
+    // Wait for the reveals to actually finish rather than guessing a duration.
+    // Under headless compositing an opacity transition can take several seconds
+    // of wall clock to advance even though it is authored at 0.9s, so a fixed
+    // sleep produced screenshots with whole sections blank — which reads as a
+    // layout bug in the page and is purely an artefact of the capture.
+    const settled = `(() => {
+      const inView = [...document.querySelectorAll('[data-reveal]')]
+        .filter((n) => { const r = n.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight; });
+      return inView.length > 0 && inView.every((n) => Number(getComputedStyle(n).opacity) > 0.99);
+    })()`;
+    for (let waited = 0; waited < 15000; waited += 400) {
+      const { result } = await rpc(ws, 'Runtime.evaluate', {
+        expression: settled,
+        returnByValue: true,
+      }, sessionId);
+      if (result.value) break;
+      await sleep(400);
+    }
+    await sleep(400);
   }
 
   const { data } = await rpc(ws, 'Page.captureScreenshot', { format: 'png' }, sessionId);

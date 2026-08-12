@@ -1,3 +1,6 @@
+import { useState } from 'react';
+
+import { Boot } from '@/components/Boot';
 import { Contact } from '@/components/Contact';
 import { Footer } from '@/components/Footer';
 import { Hero } from '@/components/Hero';
@@ -7,11 +10,19 @@ import { Plans } from '@/components/Plans';
 import { Testimonials } from '@/components/Testimonials';
 import { WhyTesla } from '@/components/WhyTesla';
 import { PLACEHOLDERS } from '@/data/business';
+import { useBootSequence } from '@/lib/useBootSequence';
 import { useScrollReveals } from '@/lib/useScrollReveals';
 import { SceneLayer } from '@/scene/SceneLayer';
 
 export default function App() {
   useScrollReveals();
+
+  // The page renders underneath the boot screen rather than after it: the point
+  // of the gate is to get the document laid out, the fonts resolved and the car
+  // decoded *while* it is up, so lifting it reveals a page that is already
+  // settled. `inert` keeps that hidden page out of the tab order meanwhile.
+  const boot = useBootSequence();
+  const [gated, setGated] = useState(true);
 
   if (import.meta.env.DEV) {
     console.info(
@@ -22,29 +33,33 @@ export default function App() {
   }
 
   return (
-    <div className="grain relative">
-      <a
-        href="#lessons"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-azure focus:px-4 focus:py-3 focus:text-cream"
-      >
-        Skip to lessons and pricing
-      </a>
+    <>
+      {gated && <Boot {...boot} onDismissed={() => setGated(false)} />}
 
-      {/* Fixed, behind everything, pointer-events: none. */}
-      <SceneLayer />
+      <div className="grain relative" inert={gated}>
+        <a
+          href="#lessons"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-azure focus:px-4 focus:py-3 focus:text-cream"
+        >
+          Skip to lessons and pricing
+        </a>
 
-      <Nav />
+        {/* Fixed, behind everything, pointer-events: none. */}
+        <SceneLayer hold={boot.holdScene} />
 
-      <main>
-        <Hero />
-        <WhyTesla />
-        <Plans />
-        <Instructors />
-        <Testimonials />
-        <Contact />
-      </main>
+        <Nav />
 
-      <Footer />
-    </div>
+        <main>
+          <Hero />
+          <WhyTesla />
+          <Plans />
+          <Instructors />
+          <Testimonials />
+          <Contact />
+        </main>
+
+        <Footer />
+      </div>
+    </>
   );
 }

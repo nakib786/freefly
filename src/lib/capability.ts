@@ -71,7 +71,23 @@ function forcedTier(): Tier | null {
   return value && TIERS.includes(value) ? value : null;
 }
 
+/**
+ * Memoised because there are now two callers — the boot screen, to know which
+ * model file to fetch, and SceneLayer, to know what to render — and the probe
+ * is not free: it creates a real WebGL2 context to test it. The answer cannot
+ * change within a page load (the `?scene=` override and the media queries it
+ * reads are all fixed at that point), so computing it twice would only mean a
+ * second throwaway GL context.
+ */
+let cached: Capability | null = null;
+
 export function detectCapability(): Capability {
+  if (cached) return cached;
+  cached = computeCapability();
+  return cached;
+}
+
+function computeCapability(): Capability {
   const reducedMotion = prefersReducedMotion();
 
   const forced = forcedTier();

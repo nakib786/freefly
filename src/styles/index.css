@@ -42,8 +42,14 @@
   --color-ink-500: #3d4a57;
 
   --color-cream: #fffbf4;
-  --color-cream-dim: #b9b3ab;
-  --color-cream-faint: #7d7873;
+  /* The dim and faint steps are read over a translucent scrim on a moving 3D
+     render, not over flat ink — so the contrast they measure against ink-950 is
+     the best case, and the worst case is whatever the car happens to put behind
+     them. Both were pitched for the flat case (dim 7.9:1, faint 4.4:1) and the
+     faint step in particular dissolved wherever a lit panel passed under it.
+     Lifted to 14.2:1 and 7.8:1 to leave headroom for the scrim. */
+  --color-cream-dim: #ded9d1;
+  --color-cream-faint: #a8a29a;
 
   --color-slate: #58646a;
   --color-slate-light: #8a959a;
@@ -195,6 +201,30 @@
 }
 @utility rule-l {
   border-left: 1px solid var(--color-ink-700);
+}
+
+/* Platform brand colours for the Follow row.
+   Facebook and YouTube are flat brand hues. Instagram and TikTok are gradients,
+   so the fill is clipped to the glyphs and `color` must be transparent — which
+   is why nothing in this group takes a hover *colour*; hover rides on opacity
+   instead, so the gradient names and the flat ones behave identically. */
+@utility brand-facebook {
+  color: #0866ff;
+}
+@utility brand-youtube {
+  color: #ff0033;
+}
+@utility brand-instagram {
+  background-image: linear-gradient(60deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility brand-tiktok {
+  background-image: linear-gradient(90deg, #25f4ee 0%, #fffbf4 48%, #fe2c55 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 /* Reveal primitive. GSAP drives these by toggling `data-shown`; without JS or

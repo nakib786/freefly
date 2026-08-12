@@ -90,6 +90,28 @@ const isGlass = (name: string) => /^glass/.test(name);
 /** Chrome/brightwork. `movsteer_1.0.1` is the export's shared polished-metal slot. */
 const isChrome = (name: string) => /(chrome|aluminium|movsteer_1\.0\.1|mirror_inside)/i.test(name);
 
+/**
+ * The rim face.
+ *
+ * `wheels.6` is the only wheel slot in this export whose base-colour map is a
+ * white rim on black — every other `wheels.*` map is already dark (tyre tread,
+ * brake disc, wheel barrel). Left alone it renders as a bright silver wheel,
+ * which is not the car the school teaches in: Free Fly's Model 3 is white with
+ * dark graphite wheels. Same reasoning as PAINT above — the model is normalised
+ * to the real vehicle rather than trusted.
+ *
+ * Tinting the existing map rather than dropping it keeps the moulded shading
+ * baked into the spokes; replacing it with a flat colour flattens them out.
+ */
+const isRim = (name: string) => /^wheels\.6/.test(name);
+
+const RIM = {
+  color: new THREE.Color('#33383d'),
+  metalness: 0.62,
+  roughness: 0.41,
+  envMapIntensity: 1.0,
+};
+
 function treatMaterial(src: THREE.Material): THREE.Material {
   const name = src.name ?? '';
   const std = src as THREE.MeshStandardMaterial;
@@ -117,6 +139,14 @@ function treatMaterial(src: THREE.Material): THREE.Material {
       transparent: true,
       envMapIntensity: 1.6,
     });
+  }
+
+  if (isRim(name)) {
+    std.color.copy(RIM.color);
+    std.metalness = RIM.metalness;
+    std.roughness = RIM.roughness;
+    std.envMapIntensity = RIM.envMapIntensity;
+    return std;
   }
 
   if (isChrome(name)) {
@@ -152,29 +182,137 @@ function treatMaterial(src: THREE.Material): THREE.Material {
 /* ------------------------------------------------------------------ wheels -- */
 
 /**
- * The GLB has no wheel pivots — every wheel mesh is baked into one flat parent
- * chain, and the mesh names (`hub_lf`, `wheels`, `wheels.001`) do not map
- * cleanly onto four corners. So wheels are found by name, then bucketed by
- * their *world* position into four quadrants, and each bucket is re-parented to
- * a group placed at that bucket's centre. Rotating the group then spins the
- * wheel about its real axle.
+ * This GLB does not contain four wheels. It contains two, and they are axles.
+ *
+ * `wheels` and `wheels.001` each hold BOTH wheels of one axle in a single mesh:
+ * 2.16 units of lateral span against a 0.58 unit tyre diameter. Only the brake
+ * hubs (`hub_lf`, `hub_rf`, `hub_lb`, `hub_rb`) exist per corner, and there are
+ * no wheel pivots anywhere in the file.
+ *
+ * That is what made the wheels wobble. Bucketing meshes into four quadrants by
+ * bounding-box centre puts an axle-pair mesh on the car's *centreline*, so both
+ * front wheels landed in one bucket behind a pivot a metre inboard of either
+ * tyre. Spin survived that by luck — the pivot still sat on the axle line, and
+ * a rotation about the axle is correct for both wheels at once — but steering
+ * did not: `rotation.y` swung the whole front axle about a vertical axis near
+ * the car's middle, scything the wheels fore and aft instead of turning them on
+ * the spot. So the pairs are split into real per-corner wheels first, and only
+ * then bucketed.
  */
+
+type WheelPart = { mesh: THREE.Object3D; box: THREE.Box3; centre: THREE.Vector3 };
+
+/**
+ * A mesh at least this much wider across the car than it is tall holds both
+ * wheels of an axle. A single wheel is a disc — its lateral span is the tyre
+ * width, a fraction of its diameter — so the two cases are far apart: the axle
+ * pairs measure ~3.7, and the widest hub ~0.9.
+ */
+const AXLE_PAIR_RATIO = 1.6;
+
+/**
+ * Splits one axle-pair mesh into a left and a right mesh either side of
+ * `splitX` (world space), returning them parented alongside the original.
+ *
+ * The halves share the source attribute buffers and differ only in their index,
+ * so this costs one extra index rather than a second copy of the geometry.
+ * Bounding volumes are set by hand on purpose: computeBoundingBox() reads the
+ * whole position attribute regardless of which vertices the index actually
+ * references, so both halves would report the bounds of the entire axle — and
+ * the bucketing below would put us straight back on the centreline.
+ */
+function splitAxlePair(mesh: THREE.Mesh, splitX: number): THREE.Mesh[] | null {
+  const source = mesh.geometry;
+  const position = source.getAttribute('position');
+  const parent = mesh.parent;
+  if (!position || !parent) return null;
+
+  const index = source.getIndex();
+  const local = new THREE.Vector3();
+  const world = new THREE.Vector3();
+  const side = new Uint8Array(position.count);
+  const bounds = [new THREE.Box3(), new THREE.Box3()];
+
+  for (let i = 0; i < position.count; i++) {
+    local.fromBufferAttribute(position, i);
+    world.copy(local).applyMatrix4(mesh.matrixWorld);
+    const s = world.x >= splitX ? 1 : 0;
+    side[i] = s;
+    bounds[s].expandByPoint(local);
+  }
+
+  const triangles = index ? index.count / 3 : position.count / 3;
+  const indices: number[][] = [[], []];
+  for (let t = 0; t < triangles; t++) {
+    const a = index ? index.getX(t * 3) : t * 3;
+    const b = index ? index.getX(t * 3 + 1) : t * 3 + 1;
+    const c = index ? index.getX(t * 3 + 2) : t * 3 + 2;
+    // The two wheels are disjoint clusters with a metre of air between them —
+    // no triangle bridges the gap — so one vertex decides the whole triangle.
+    indices[side[a]].push(a, b, c);
+  }
+  if (!indices[0].length || !indices[1].length) return null;
+
+  const halves = indices.map((list, s) => {
+    const geometry = new THREE.BufferGeometry();
+    for (const [name, attribute] of Object.entries(source.attributes)) {
+      geometry.setAttribute(name, attribute);
+    }
+    geometry.setIndex(list);
+    geometry.boundingBox = bounds[s].clone();
+    geometry.boundingSphere = bounds[s].getBoundingSphere(new THREE.Sphere());
+
+    const half = new THREE.Mesh(geometry, mesh.material);
+    half.name = `${mesh.name}-${s ? 'r' : 'l'}`;
+    half.castShadow = mesh.castShadow;
+    half.receiveShadow = mesh.receiveShadow;
+    half.frustumCulled = mesh.frustumCulled;
+    half.position.copy(mesh.position);
+    half.quaternion.copy(mesh.quaternion);
+    half.scale.copy(mesh.scale);
+    parent.add(half);
+    half.updateMatrixWorld(true);
+    return half;
+  });
+
+  mesh.removeFromParent();
+  return halves;
+}
+
 function buildWheelGroups(root: THREE.Object3D): WheelGroups | null {
   root.updateWorldMatrix(true, true);
-
-  const parts: { mesh: THREE.Object3D; centre: THREE.Vector3 }[] = [];
-  root.traverse((o) => {
-    if (!(o as THREE.Mesh).isMesh) return;
-    if (!/^(hub_|wheels)/i.test(o.name)) return;
-    const box = new THREE.Box3().setFromObject(o);
-    parts.push({ mesh: o, centre: box.getCenter(new THREE.Vector3()) });
-  });
-  if (parts.length < 4) return null;
 
   const bounds = new THREE.Box3().setFromObject(root);
   const mid = bounds.getCenter(new THREE.Vector3());
 
-  const buckets: Record<keyof WheelGroups, typeof parts> = {
+  const candidates: THREE.Mesh[] = [];
+  root.traverse((o) => {
+    const mesh = o as THREE.Mesh;
+    if (!mesh.isMesh) return;
+    if (!/^(hub_|wheels)/i.test(mesh.name)) return;
+    candidates.push(mesh);
+  });
+  if (!candidates.length) return null;
+
+  const parts: WheelPart[] = [];
+  const record = (mesh: THREE.Object3D, box: THREE.Box3) =>
+    parts.push({ mesh, box, centre: box.getCenter(new THREE.Vector3()) });
+
+  for (const mesh of candidates) {
+    const box = new THREE.Box3().setFromObject(mesh);
+    const size = box.getSize(new THREE.Vector3());
+    const halves =
+      size.x > AXLE_PAIR_RATIO * Math.max(size.y, size.z) ? splitAxlePair(mesh, mid.x) : null;
+
+    if (!halves) {
+      record(mesh, box);
+      continue;
+    }
+    for (const half of halves) record(half, new THREE.Box3().setFromObject(half));
+  }
+  if (parts.length < 4) return null;
+
+  const buckets: Record<keyof WheelGroups, WheelPart[]> = {
     frontLeft: [],
     frontRight: [],
     rearLeft: [],
@@ -193,9 +331,13 @@ function buildWheelGroups(root: THREE.Object3D): WheelGroups | null {
   const groups = {} as WheelGroups;
   for (const key of Object.keys(buckets) as (keyof WheelGroups)[]) {
     const bucket = buckets[key];
-    const centre = bucket
-      .reduce((acc, p) => acc.add(p.centre), new THREE.Vector3())
-      .divideScalar(bucket.length);
+    // Union of the bucket's boxes, not the mean of their centres. The tyre is
+    // symmetric about the axle, so the union's centre is the axle; the mean is
+    // dragged off it by the brake caliper, which is not symmetric and counts
+    // for as much as the wheel it sits inside.
+    const box = new THREE.Box3();
+    for (const part of bucket) box.union(part.box);
+    const centre = box.getCenter(new THREE.Vector3());
 
     const pivot = new THREE.Group();
     pivot.name = `wheel-${key}`;

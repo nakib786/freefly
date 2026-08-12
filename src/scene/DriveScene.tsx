@@ -15,6 +15,7 @@ import type { Capability } from '@/lib/capability';
 import { CameraRig, type SampledDrive } from '@/scene/CameraRig';
 import { CarModel, type WheelGroups } from '@/scene/CarModel';
 import { Road } from '@/scene/Road';
+import { sceneReady } from '@/scene/sceneReady';
 import { StudioEnvironment } from '@/scene/StudioEnvironment';
 
 type Props = { capability: Capability };
@@ -37,9 +38,13 @@ function CarRig({
   const radius = useRef(0.34);
   const body = useRef<THREE.Group>(null);
   const spin = useRef(0);
+  const loaded = useRef(false);
+  const announced = useRef(false);
 
   const onWheels = useCallback((groups: WheelGroups | null) => {
     wheels.current = groups;
+    // Fires once the GLB has been parsed, whether or not a rig came out of it.
+    loaded.current = true;
     if (!groups) return;
     // Derive the rolling radius from the model rather than assuming a tyre
     // size, so wheel spin stays correct if the model is ever swapped.
@@ -56,6 +61,16 @@ function CarRig({
 
   useFrame((_, delta) => {
     const dt = Math.min(delta, 1 / 20);
+
+    // Announce from inside the loop, not from onWheels: by the time a frame
+    // runs, the decode, texture upload and shader compile are all behind us, so
+    // this is the first moment the car is genuinely on screen rather than
+    // merely downloaded. The boot gate waits on it.
+    if (loaded.current && !announced.current) {
+      announced.current = true;
+      sceneReady.mark();
+    }
+
     const drive = driveRef.current;
     if (!drive) return;
 

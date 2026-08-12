@@ -53,13 +53,33 @@ function StaticHero() {
   );
 }
 
-export function SceneLayer() {
+type SceneLayerProps = {
+  /**
+   * Keeps the 3D layer unmounted while the boot screen is still streaming the
+   * GLB. Without it, GLTFLoader would request the same file at the same time as
+   * the preloader and the browser would fetch 1.5 MB twice — neither request
+   * can be served from a cache entry the other has not finished writing.
+   */
+  hold?: boolean;
+};
+
+export function SceneLayer({ hold = false }: SceneLayerProps) {
   const [capability, setCapability] = useState<Capability | null>(null);
   const demoted = useRef(false);
 
+  // Warm the scene chunk immediately, even while held. `hold` exists only to
+  // stop GLTFLoader racing the boot preloader for the same GLB — it should not
+  // also delay ~1 MB of three.js, which has nothing to do with that conflict.
+  // Kicking the dynamic import off here downloads it alongside the model rather
+  // than after it; lazy() below reuses this very module promise.
   useEffect(() => {
-    setCapability(detectCapability());
+    void import('@/scene/DriveScene');
   }, []);
+
+  useEffect(() => {
+    if (hold) return;
+    setCapability(detectCapability());
+  }, [hold]);
 
   // Keep camera beats pinned to where the sections actually are.
   useEffect(() => {

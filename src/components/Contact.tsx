@@ -18,6 +18,19 @@ import { BUSINESS, SOCIALS } from '@/data/business';
 const FIELD =
   'w-full border border-ink-600 bg-ink-900/70 px-4 py-3 text-cream placeholder:text-ink-500 transition-colors focus:border-azure focus:outline-none';
 
+/**
+ * Each network's name is set in that network's own brand colour — the two
+ * gradient marks (Instagram, TikTok) clip their gradient to the text, defined
+ * in index.css. Written out as whole class strings rather than composed from
+ * the label, because Tailwind's scanner only sees literals.
+ */
+const BRAND: Record<string, string> = {
+  Instagram: 'brand-instagram',
+  Facebook: 'brand-facebook',
+  YouTube: 'brand-youtube',
+  TikTok: 'brand-tiktok',
+};
+
 type Status =
   | { state: 'idle' }
   | { state: 'sending' }
@@ -101,7 +114,11 @@ export function Contact() {
                     rel="noopener noreferrer"
                     className="group flex items-baseline gap-3"
                   >
-                    <span className="type-heading text-lg text-cream transition-colors group-hover:text-azure-bright">
+                    <span
+                      className={`type-heading text-lg transition-opacity group-hover:opacity-75 ${
+                        BRAND[social.label] ?? 'text-cream'
+                      }`}
+                    >
                       {social.label}
                     </span>
                     <span className="type-telemetry text-cream-faint">{social.handle}</span>

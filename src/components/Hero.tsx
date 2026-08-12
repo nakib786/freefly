@@ -61,7 +61,7 @@ export function Hero() {
             </a>
             <a
               href="#lessons"
-              className="type-telemetry border border-ink-600 px-6 py-4 text-cream transition-colors hover:border-azure hover:text-azure-bright"
+              className="type-telemetry border border-azure bg-azure/12 px-6 py-4 text-azure-bright transition-colors hover:bg-azure hover:text-cream"
             >
               See plans &amp; prices
             </a>

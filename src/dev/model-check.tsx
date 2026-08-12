@@ -7,11 +7,11 @@
  */
 import { OrbitControls, Stats } from '@react-three/drei';
 import { Canvas, useThree } from '@react-three/fiber';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import * as THREE from 'three';
 
-import { CarModel, useCarGltf } from '@/scene/CarModel';
+import { CarModel, useCarGltf, type WheelGroups } from '@/scene/CarModel';
 import { StudioEnvironment } from '@/scene/StudioEnvironment';
 import '@/styles/index.css';
 
@@ -135,6 +135,32 @@ function App() {
 
   const Bridge = useMemo(() => CaptureBridge({ setSource, setView, setWire }), []);
 
+  /**
+   * Publishes the resolved wheel rig on `window.__wheels`, in world metres.
+   * The rig is derived from mesh bounds rather than authored pivots (the GLB has
+   * none — see CarModel), so "did it find four wheels, and are they at the four
+   * corners" is worth being able to check directly instead of inferring it from
+   * a still frame, where a mis-placed pivot only shows up once it rotates.
+   */
+  const onWheels = useCallback((groups: WheelGroups | null) => {
+    const report =
+      groups &&
+      Object.fromEntries(
+        Object.entries(groups).map(([corner, pivot]) => [
+          corner,
+          {
+            world: pivot
+              .getWorldPosition(new THREE.Vector3())
+              .toArray()
+              .map((n) => +n.toFixed(3)),
+            meshes: pivot.children.length,
+          },
+        ]),
+      );
+    Object.assign(window as never, { __wheels: report });
+    console.info('[model-check] wheel rig', report);
+  }, []);
+
   return (
     <div className="fixed inset-0">
       <Canvas
@@ -150,7 +176,7 @@ function App() {
         <Bridge />
         <color attach="background" args={[bg]} />
         <Suspense fallback={null}>
-          <CarModel key={source} url={SOURCES[source]} wireframe={wire} />
+          <CarModel key={source} url={SOURCES[source]} wireframe={wire} onWheels={onWheels} />
           <StudioEnvironment />
         </Suspense>
         <OrbitControls makeDefault target={[0, 0.7, 0]} />
