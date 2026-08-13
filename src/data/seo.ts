@@ -37,10 +37,11 @@
  * that day, together with `CANONICAL_HOST` in functions/_middleware.ts. Until
  * then, pointing canonicals at the apex points them at nothing.
  *
- * `new.freeflydriving.ca` and `freefly-driving.pages.dev` are deploy hosts and
- * must never appear here. They serve the identical site, so canonicalising onto
- * one would point the whole index at a URL the business does not advertise. The
- * middleware sends `noindex` on `.pages.dev` for the same reason.
+ * `freefly-driving.pages.dev` and its per-branch preview hosts are deploy hosts
+ * and must never appear here. They serve the identical site, so canonicalising
+ * onto one would point the whole index at a URL the business does not
+ * advertise. The middleware sends `noindex` on `.pages.dev` for the same
+ * reason.
  */
 export const ORIGIN = 'https://www.freeflydriving.ca';
 

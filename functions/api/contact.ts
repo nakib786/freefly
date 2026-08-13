@@ -3,9 +3,9 @@
  *
  * Thin proxy onto the freefly-mailer Worker over a service binding. All the
  * validation, rate limiting and mail composition live there; this exists so the
- * form posts same-origin to new.freeflydriving.ca (no CORS, no second hostname
- * for a visitor's browser to reach) while the mailer stays private with no
- * public route at all.
+ * form posts same-origin to whichever host is serving the site (no CORS, no
+ * second hostname for a visitor's browser to reach) while the mailer stays
+ * private with no public route at all.
  *
  * The split is forced by the platform: `send_email` and `ratelimits` are
  * Workers-only bindings that Pages config rejects. See ../../wrangler.toml.

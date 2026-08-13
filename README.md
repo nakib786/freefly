@@ -51,7 +51,7 @@ re-focused after 30s: edit in Wix, switch back to the site, see the new price.
 To skip the edge copy entirely and check what Wix currently returns:
 
 ```bash
-curl -s "https://new.freeflydriving.ca/api/plans?fresh=1" -D - -o /dev/null | grep -i x-plans-cache
+curl -s "https://www.freeflydriving.ca/api/plans?fresh=1" -D - -o /dev/null | grep -i x-plans-cache
 ```
 
 `x-plans-cache` is on every response: `hit` (edge copy), `miss` (read Wix and
@@ -77,7 +77,7 @@ which the detection deliberately refuses to give real 3D to.
 ## Architecture: two deployables, one origin
 
 ```
-new.freeflydriving.ca  (Pages: freefly-driving)
+www.freeflydriving.ca  (Pages: freefly-driving)
 ├── static site                     dist/
 ├── /api/plans                      functions/api/plans.ts   → Wix Pricing Plans
 └── /api/contact                    functions/api/contact.ts → service binding ↓
@@ -88,7 +88,7 @@ new.freeflydriving.ca  (Pages: freefly-driving)
 
 The mailer is a **separate Worker with no route of its own**. The only way to
 reach it is the `MAILER` service binding from `/api/contact`. Visitors only ever
-talk to `new.freeflydriving.ca`, so there is no CORS anywhere and no public
+talk to `www.freeflydriving.ca`, so there is no CORS anywhere and no public
 email endpoint to abuse.
 
 **Why it isn't a single deployable**, since that is the obvious question:
@@ -98,7 +98,7 @@ email endpoint to abuse.
 2. The fix for (1) would be migrating the site to a Worker with static assets,
    but that breaks the live domain. `freeflydriving.ca` runs on Wix nameservers
    (`ns2.wixdns.net`), so the zone is not on this Cloudflare account.
-   `new.freeflydriving.ca` works today because Pages accepts a CNAME from
+   `www.freeflydriving.ca` works today because Pages accepts a CNAME from
    external DNS; **Workers Custom Domains require the zone to be on-account.**
 
 If `freeflydriving.ca` is ever moved onto Cloudflare, this collapses into one
@@ -323,7 +323,7 @@ in `src/data/seo.ts`. Change it there and nothing else.
 | --- | --- |
 | `www.freeflydriving.ca` | Serves normally. The canonical host. |
 | `freeflydriving.ca` | **301 to `www.`**, path and query preserved, forced to https. Unreachable today (see below), and correct the moment an apex record exists. |
-| `new.freeflydriving.ca`, `*.pages.dev` | Serves normally with `X-Robots-Tag: noindex, nofollow`. They serve byte-identical pages, so left alone they compete with production. |
+| `*.pages.dev` | Serves normally with `X-Robots-Tag: noindex, nofollow`. Serves byte-identical pages, so left alone it competes with production. |
 
 The `noindex` is applied by hostname, so it never touches the canonical domain
 and there is nothing to undo after the cutover.
@@ -347,7 +347,7 @@ hostname that did work was the one being redirected away.
 ### Cutover checklist
 
 Moving the zone onto Cloudflare is what restores the apex, because Cloudflare
-does flatten a CNAME there. The generator's price fetch tries `www.`, `new.`,
+does flatten a CNAME there. The generator's price fetch tries `www.`,
 `pages.dev` and the apex in that order, so builds produce correct prices on
 either side of the move.
 

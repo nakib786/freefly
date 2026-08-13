@@ -69,9 +69,14 @@ const APEX_HOST = 'freeflydriving.ca';
  * tag alone is a hint that Google is free to ignore. The deploy hosts get
  * `noindex` instead of a redirect, because redirecting them would break the
  * ability to test a deploy before the domain points at it.
+ *
+ * `new.` used to be listed here and was retired once `www.` served the site.
+ * The check is deliberately not left in as a harmless leftover: `.pages.dev`
+ * covers every per-branch preview, and a rule matching a hostname that no
+ * longer belongs to this project would be the kind of thing someone later
+ * mistakes for evidence that the hostname is still wired up.
  */
-const isDeployHost = (host: string) =>
-  host.endsWith('.pages.dev') || host.startsWith('new.');
+const isDeployHost = (host: string) => host.endsWith('.pages.dev');
 
 /**
  * Highest q-value for a media type in an Accept header.
@@ -175,8 +180,8 @@ export const onRequest = async (context: PagesContext): Promise<Response> => {
   /**
    * Keep the deploy hosts out of the index.
    *
-   * freefly-driving.pages.dev, any per-branch preview host and new.* all serve
-   * the identical pages. Left alone that is a duplicate of the whole site on a
+   * freefly-driving.pages.dev and any per-branch preview host serve the
+   * identical pages. Left alone that is a duplicate of the whole site on a
    * domain nobody advertises, competing with the real one and splitting its
    * signals, which is the classic way a staging host outranks production.
    *

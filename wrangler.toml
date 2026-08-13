@@ -11,7 +11,7 @@
 #   2. The obvious fix (migrating the whole site to a Worker with static assets)
 #      breaks the live domain. freeflydriving.ca runs on Wix nameservers
 #      (ns2.wixdns.net), so the zone is not on this Cloudflare account.
-#      new.freeflydriving.ca works today because Pages accepts a CNAME from
+#      www.freeflydriving.ca works today because Pages accepts a CNAME from
 #      external DNS; Workers Custom Domains require the zone to be on-account.
 #      Deploying the site as a Worker would take the domain down.
 #

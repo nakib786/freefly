@@ -23,7 +23,24 @@
   #
   # This is not a real widening: a blob: URL is same-origin memory this page
   # created itself, not a remote host. default-src 'self' still denies the rest.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none'
+  #
+  # The one genuine third party is the Cloudflare Web Analytics beacon, which
+  # Pages injects into the response itself; it is not in this repo, which is why
+  # nothing here referenced it and it sat blocked. It needs TWO entries, and the
+  # second is easy to miss because the first makes the console error go away:
+  #
+  #   script-src   to fetch beacon.min.js. Pinned to the exact script path
+  #                rather than opening the whole host.
+  #   connect-src  to POST the collected data back. Cloudflare's docs say an
+  #                injected beacon reports same-origin to /cdn-cgi/rum, which
+  #                'self' would already cover, but observed behaviour is a POST
+  #                to https://cloudflareinsights.com/cdn-cgi/rum. Both are
+  #                allowed rather than betting on which path a given edge takes.
+  #
+  # Verified by listening for securitypolicyviolation while loading the real
+  # beacon, not by reading the header back, since the script-src fix alone
+  # silences the console while still dropping every beacon.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob: https://static.cloudflareinsights.com/beacon.min.js; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' blob: https://cloudflareinsights.com; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none'
 
 # Vite fingerprints these, so they can be cached indefinitely.
 /assets/*

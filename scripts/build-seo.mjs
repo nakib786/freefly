@@ -51,16 +51,19 @@ const DIST = join(ROOT, 'dist');
  *
  * A list rather than one URL because the canonical host has moved before and
  * will move again: `www.` serves today, the apex will once the zone is on
- * Cloudflare, and `new.` plus the pages.dev host answer throughout. Trying them
- * in order means the build produces correct prices on either side of a move
- * with nothing to remember to edit on the day.
+ * Cloudflare, and the pages.dev host answers throughout. Trying them in order
+ * means the build produces correct prices on either side of a move with nothing
+ * to remember to edit on the day.
  *
  * The apex is last rather than first because it currently has no DNS record at
- * all, so it is the least likely of the four to answer, not the most.
+ * all, so it is the least likely of the three to answer, not the most.
+ *
+ * `new.` was removed when the hostname was retired. Leaving it in was not free:
+ * it no longer 404s, it fails its TLS handshake, which is a slower failure to
+ * fall through than a clean 404.
  */
 const PLANS_APIS = [
   'https://www.freeflydriving.ca/api/plans',
-  'https://new.freeflydriving.ca/api/plans',
   'https://freefly-driving.pages.dev/api/plans',
   'https://freeflydriving.ca/api/plans',
 ];

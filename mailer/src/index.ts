@@ -8,7 +8,7 @@
  *
  * It is a separate Worker purely because Pages cannot hold the bindings this
  * needs: `send_email` and `ratelimits` are Workers-only, and migrating the site
- * itself to a Worker would break new.freeflydriving.ca (the zone lives on Wix
+ * itself to a Worker would take the live domain down (the zone lives on Wix
  * nameservers). See the comment block in ../wrangler.toml for the full story.
  *
  * ─── Abuse surface ────────────────────────────────────────────────────────

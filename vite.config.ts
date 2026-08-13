@@ -173,10 +173,14 @@ export default defineConfig({
      * Borrowing the deployed endpoint is enough to see real prices locally. It
      * exercises the *deployed* Function rather than your edits to it, so use
      * `npm run dev:full` when the thing you are changing is functions/api/plans.ts.
+     *
+     * Points at the canonical host. It used to be `new.`, which was retired: the
+     * hostname now fails its TLS handshake rather than 404ing, so this proxy
+     * broke silently and local pricing fell back to the bundled snapshot.
      */
     proxy: {
       '/api/plans': {
-        target: 'https://new.freeflydriving.ca',
+        target: 'https://www.freeflydriving.ca',
         changeOrigin: true,
       },
     },
