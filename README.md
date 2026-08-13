@@ -18,8 +18,8 @@ The dev server runs on port 5180 (`.claude/launch.json` pins it).
 
 | Script | What it does |
 | --- | --- |
-| `npm run dev` | Vite dev server. `/api/plans` does not exist here, so pricing uses the bundled fallback |
-| `npm run dev:full` | Builds, then serves via wrangler so the Pages Function runs and reads `.env`. Use for pricing work |
+| `npm run dev` | Vite dev server. `/api/plans` is proxied to the deployed site, so pricing is live |
+| `npm run dev:full` | Builds, then serves via wrangler so the Pages Function runs locally and reads `.env`. Use when changing the Function itself |
 | `npm run build` | Typecheck + production build to `dist/` |
 | `npm run preview` | Serve the production build locally (static only, no Functions) |
 | `npm run deploy` | Build and direct-upload to Cloudflare Pages |
@@ -39,7 +39,25 @@ cp .env.example .env   # then paste the Wix API key into .env
 
 `.env` is gitignored. `.env.example` is committed — **never put a real key in
 it**. Only `npm run dev:full` reads these; plain `npm run dev` does not need
-them.
+them (it proxies `/api/plans` to the deployed site instead).
+
+### How fresh are the prices
+
+A price edited in the Wix dashboard shows up on the next page load, within the
+15-second edge TTL in `functions/api/plans.ts`. The browser is told `no-store`,
+so it never holds a copy of its own, and the page refetches when the tab is
+re-focused after 30s — edit in Wix, switch back to the site, see the new price.
+
+To skip the edge copy entirely and check what Wix currently returns:
+
+```bash
+curl -s "https://new.freeflydriving.ca/api/plans?fresh=1" -D - -o /dev/null | grep -i x-plans-cache
+```
+
+`x-plans-cache` is on every response: `hit` (edge copy), `miss` (read Wix and
+stored it), `bypass` (`?fresh=1`). If prices look wrong, that header separates
+"stale" from "broken" — and a `502` body with `error: upstream_*` means the key
+or its scope is the problem, not the cache.
 
 ### Dev-only pages
 

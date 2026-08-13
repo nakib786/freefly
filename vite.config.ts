@@ -144,6 +144,24 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
+  server: {
+    /**
+     * `vite dev` does not run Pages Functions, so /api/plans used to 404 here and
+     * the pricing section silently showed its bundled fallback — indistinguishable
+     * from the live read being broken, and unfixable by any amount of .env editing
+     * (that file is read by the Function, never by Vite).
+     *
+     * Borrowing the deployed endpoint is enough to see real prices locally. It
+     * exercises the *deployed* Function rather than your edits to it, so use
+     * `npm run dev:full` when the thing you are changing is functions/api/plans.ts.
+     */
+    proxy: {
+      '/api/plans': {
+        target: 'https://new.freeflydriving.ca',
+        changeOrigin: true,
+      },
+    },
+  },
   build: {
     target: 'es2022',
     // Two documents, named explicitly. model-check.html and static-hero.html are

@@ -5,9 +5,10 @@
  * dashboard should reach the site without anyone triggering a redeploy, and
  * the fallback means there is no loading-shaped hole if the call is slow or the
  * key is not configured yet. The first paint shows real (if possibly stale)
- * prices immediately, then swaps in live data if it differs.
+ * prices immediately, then swaps in live data if it differs — on mount, and
+ * again when the tab is re-focused after REFOCUS_REFRESH_MS.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { FALLBACK_PLANS, mergeWithFallback, type LivePlan, type Plan } from '@/data/plans';
 
@@ -22,6 +23,14 @@ export type PlansState = {
 };
 
 const SESSION_KEY = 'freefly:plans:v1';
+
+/**
+ * Floor between refetches when the tab is re-focused. Editing a price in Wix
+ * and switching back to the site is the exact moment someone wants to see the
+ * new number, and making them reload to get it is what "not updating" felt
+ * like. Long enough that tabbing back and forth is not a request per switch.
+ */
+const REFOCUS_REFRESH_MS = 30_000;
 
 function readSession(): LivePlan[] | null {
   try {
@@ -40,12 +49,18 @@ export function usePlans(): PlansState {
       : { plans: FALLBACK_PLANS, live: false, unconfigured: false };
   });
 
+  const lastLoad = useRef(0);
+
   useEffect(() => {
     const controller = new AbortController();
 
-    (async () => {
+    const load = async () => {
+      lastLoad.current = Date.now();
       try {
-        const res = await fetch('/api/plans', { signal: controller.signal });
+        // `no-store`: the endpoint already sends no-store, and the session copy
+        // above covers the "instant first paint" case this would otherwise buy.
+        // A browser cache here only ever serves a price we know is superseded.
+        const res = await fetch('/api/plans', { cache: 'no-store', signal: controller.signal });
 
         if (res.status === 503) {
           setState((s) => ({ ...s, unconfigured: true }));
@@ -67,9 +82,21 @@ export function usePlans(): PlansState {
         // Offline, aborted, or the function isn't deployed (e.g. `vite dev`).
         // The fallback plans are already on screen; nothing to do.
       }
-    })();
+    };
 
-    return () => controller.abort();
+    void load();
+
+    const onFocus = () => {
+      if (document.visibilityState !== 'visible') return;
+      if (Date.now() - lastLoad.current < REFOCUS_REFRESH_MS) return;
+      void load();
+    };
+
+    document.addEventListener('visibilitychange', onFocus);
+    return () => {
+      controller.abort();
+      document.removeEventListener('visibilitychange', onFocus);
+    };
   }, []);
 
   return state;
