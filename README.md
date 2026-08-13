@@ -313,42 +313,64 @@ nothing specific to say about driving there, the city does not get a page.
 
 ### Hosts
 
-`https://freeflydriving.ca` — the apex, no `www` — is the canonical origin.
-Every canonical tag, `og:url`, JSON-LD `@id`, sitemap `<loc>` and llms.txt link
-derives from `ORIGIN` in `src/data/seo.ts`. Change it there and nothing else.
+`https://www.freeflydriving.ca` is the canonical origin. Every canonical tag,
+`og:url`, JSON-LD `@id`, sitemap `<loc>` and llms.txt link derives from `ORIGIN`
+in `src/data/seo.ts`. Change it there and nothing else.
 
 `functions/_middleware.ts` enforces it:
 
 | Host | Behaviour |
 | --- | --- |
-| `freeflydriving.ca` | Serves normally. The canonical host. |
-| `www.freeflydriving.ca` | **301 to the apex**, path and query preserved, forced to https. A canonical tag is a hint Google may ignore; the redirect is not. |
+| `www.freeflydriving.ca` | Serves normally. The canonical host. |
+| `freeflydriving.ca` | **301 to `www.`**, path and query preserved, forced to https. Unreachable today (see below), and correct the moment an apex record exists. |
 | `new.freeflydriving.ca`, `*.pages.dev` | Serves normally with `X-Robots-Tag: noindex, nofollow`. They serve byte-identical pages, so left alone they compete with production. |
 
 The `noindex` is applied by hostname, so it never touches the canonical domain
 and there is nothing to undo after the cutover.
 
+### Why `www.` and not the apex
+
+The apex is where this should end up, and `www.` is a stopgap.
+
+`freeflydriving.ca` has no A, AAAA or CNAME record at all. It does not serve the
+old Wix site; it does not resolve. The zone runs on Wix nameservers
+(`ns2`/`ns3.wixdns.net`), and Wix's DNS panel offers no CNAME flattening or
+ALIAS record, so the apex cannot be pointed at a Pages project: DNS forbids a
+CNAME at a zone apex, and Pages publishes no stable A record to use instead.
+`www.` is a plain CNAME, which Wix DNS does support.
+
+Canonicalising on the apex before it resolved is what took the site off its own
+domain: every canonical tag and sitemap URL aimed at a dead host, and the
+middleware's `www.` → apex redirect bounced real visitors into it, so the one
+hostname that did work was the one being redirected away.
+
 ### Cutover checklist
 
-The generator's price fetch already tries the apex, then `new.`, then
-`pages.dev`, so builds produce correct prices on either side of the move.
+Moving the zone onto Cloudflare is what restores the apex, because Cloudflare
+does flatten a CNAME there. The generator's price fetch tries `www.`, `new.`,
+`pages.dev` and the apex in that order, so builds produce correct prices on
+either side of the move.
 
-1. Point `freeflydriving.ca` at the Pages project (Pages → freefly-driving →
-   Custom domains). Add `www.freeflydriving.ca` as a domain too — it has to
-   reach the project for the middleware to redirect it.
-2. `npm run deploy`.
-3. `npm run deploy:mailer`. The enquiry email hotlinks its logo from the apex,
-   so its header stays broken until this runs **after** DNS resolves.
-4. Verify `https://freeflydriving.ca/` in Search Console (domain property, so
-   it covers every subdomain), then submit
-   `https://freeflydriving.ca/sitemap.xml`.
-5. Spot-check: `curl -sI https://www.freeflydriving.ca/ | grep -i location`
-   should show a 301 to the apex.
+1. Change the nameservers at Wix to the Cloudflare pair and add the zone in
+   Cloudflare. The zone has no MX and no TXT records, so there is no mail or
+   domain verification to carry across; the two CNAMEs are the whole migration.
+2. Add `freeflydriving.ca` to the Pages project (Pages → freefly-driving →
+   Custom domains). Cloudflare creates the flattened apex record itself.
+3. Set `ORIGIN` in `src/data/seo.ts` and `CANONICAL_HOST` in
+   `functions/_middleware.ts` back to the apex, and invert the redirect so
+   `www.` points at the apex again rather than the reverse. Both carry a comment
+   pointing at the other.
+4. `npm run deploy`.
+5. `npm run deploy:mailer`. The enquiry email hotlinks its logo from `SITE`, so
+   its header breaks if that host stops serving; this runs **after** DNS
+   resolves, never before.
+6. Verify the domain property in Search Console (it covers every subdomain),
+   then submit the sitemap at whichever host is canonical at the time.
 
 > [!NOTE]
-> Do not submit the sitemap before step 1. Until DNS moves, the apex is still
-> the Wix site, so every URL in the sitemap would 404 or serve someone else's
-> page and the property would be recorded as broken.
+> The sitemap is only safe to submit while `ORIGIN` names a host that resolves.
+> Submitting one full of apex URLs before step 2 records the property as broken,
+> which is the failure this section exists to prevent.
 
 ## Real content and where it came from
 

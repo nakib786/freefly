@@ -49,16 +49,20 @@ const DIST = join(ROOT, 'dist');
 /**
  * Where live prices come from, in order of preference.
  *
- * A list rather than one URL because the site is mid-migration onto the apex
- * domain: before the DNS cutover the apex is still the old Wix site and only
- * `new.` answers /api/plans; after it, the apex answers and `new.` may be
- * retired. Trying them in order means the build produces correct prices on
- * either side of the move with nothing to remember to edit on the day.
+ * A list rather than one URL because the canonical host has moved before and
+ * will move again: `www.` serves today, the apex will once the zone is on
+ * Cloudflare, and `new.` plus the pages.dev host answer throughout. Trying them
+ * in order means the build produces correct prices on either side of a move
+ * with nothing to remember to edit on the day.
+ *
+ * The apex is last rather than first because it currently has no DNS record at
+ * all, so it is the least likely of the four to answer, not the most.
  */
 const PLANS_APIS = [
-  'https://freeflydriving.ca/api/plans',
+  'https://www.freeflydriving.ca/api/plans',
   'https://new.freeflydriving.ca/api/plans',
   'https://freefly-driving.pages.dev/api/plans',
+  'https://freeflydriving.ca/api/plans',
 ];
 const PLANS_TIMEOUT_MS = 8000;
 

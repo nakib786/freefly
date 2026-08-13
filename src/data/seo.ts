@@ -9,24 +9,40 @@
  */
 
 /**
- * Canonical origin. Apex domain, no `www.`, no trailing slash.
+ * Canonical origin. No trailing slash.
  *
  * ⚠ Change this in one place only. Every canonical tag, og:url, JSON-LD @id,
  * sitemap <loc> and llms.txt link is derived from it, and the single most
  * common way a site loses its ranking to a duplicate of itself is two files
  * disagreeing about the host.
  *
- * The apex is the canonical host and `www.` redirects to it — see
- * `CANONICAL_HOST` in functions/_middleware.ts, which issues that redirect. It
- * has to be one or the other and consistently: serving both means every page
- * exists twice as far as a crawler is concerned.
+ * ── Why `www.` and not the apex ────────────────────────────────────────────
+ *
+ * This is a stopgap, and the apex is still where this should end up.
+ *
+ * `freeflydriving.ca` has no DNS record of any kind. The zone runs on Wix
+ * nameservers (ns2/ns3.wixdns.net) and Wix's DNS panel has no CNAME flattening
+ * or ALIAS record, so the apex cannot be pointed at a Pages project at all:
+ * DNS forbids a CNAME at the zone apex, and Pages publishes no stable A record
+ * to use instead. The apex was canonical here before it was ever resolvable,
+ * which meant every canonical tag, every sitemap <loc> and the `www.` redirect
+ * all aimed at a host that answers nothing.
+ *
+ * `www.freeflydriving.ca` is a plain CNAME, which Wix DNS does support, and it
+ * already resolves to the Pages project. So it is the only host the business
+ * can advertise today that actually serves.
+ *
+ * Moving the zone onto Cloudflare restores the apex (CNAME flattening makes it
+ * possible) and this should be changed back to `https://freeflydriving.ca` on
+ * that day, together with `CANONICAL_HOST` in functions/_middleware.ts. Until
+ * then, pointing canonicals at the apex points them at nothing.
  *
  * `new.freeflydriving.ca` and `freefly-driving.pages.dev` are deploy hosts and
  * must never appear here. They serve the identical site, so canonicalising onto
  * one would point the whole index at a URL the business does not advertise. The
  * middleware sends `noindex` on `.pages.dev` for the same reason.
  */
-export const ORIGIN = 'https://freeflydriving.ca';
+export const ORIGIN = 'https://www.freeflydriving.ca';
 
 /** Host part of ORIGIN, for the redirect and for host comparisons. */
 export const CANONICAL_HOST = new URL(ORIGIN).host;

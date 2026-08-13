@@ -11,7 +11,19 @@
   # /api/plans, which is same-origin (the Pages Function talks to Wix, the
   # browser never does). blob: and data: are for the Draco worker and the
   # procedurally generated road texture.
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none'
+  #
+  # `connect-src` needs blob: for the GLB's textures, which is not obvious.
+  # They are embedded in the .glb rather than being separate files, so
+  # GLTFLoader unpacks them into blob: URLs and then loads those. Where
+  # `createImageBitmap` exists (every browser that matters) it loads them with
+  # ImageBitmapLoader, which is a `fetch()`, so they are governed by
+  # connect-src and NOT by the img-src blob: allowance above. Without this the
+  # car renders with flat material colours and no texture maps, and the console
+  # fills with `GLTFLoader: Couldn't load texture blob:`.
+  #
+  # This is not a real widening: a blob: URL is same-origin memory this page
+  # created itself, not a remote host. default-src 'self' still denies the rest.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'none'
 
 # Vite fingerprints these, so they can be cached indefinitely.
 /assets/*

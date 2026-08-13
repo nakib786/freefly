@@ -41,10 +41,14 @@ const DESTINATION = 'freeflydriving@gmail.com';
  * Canonical site origin. Must match `ORIGIN` in src/data/seo.ts.
  *
  * ⚠ The logo below is hotlinked from this host, so the enquiry emails only
- * render their header once the apex actually serves this project. Redeploy the
- * mailer (`npm run deploy:mailer`) after the DNS cutover, not before.
+ * render their header once this host actually serves the project. It was the
+ * apex, which has never had a DNS record, so every enquiry email sent so far
+ * arrived with a broken header image. `www.` resolves and serves today, which
+ * is why the canonical host moved there; see the note on `ORIGIN` in
+ * src/data/seo.ts. Redeploy the mailer (`npm run deploy:mailer`) whenever this
+ * changes, including on the eventual move back to the apex.
  */
-const SITE = 'https://freeflydriving.ca';
+const SITE = 'https://www.freeflydriving.ca';
 /** Shown in the email footer, without the scheme. */
 const SITE_LABEL = 'freeflydriving.ca';
 /** Rendered in the email header. PNG, not SVG, because email clients won't render SVG. */

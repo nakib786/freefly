@@ -49,16 +49,26 @@ const MARKDOWN_ROUTES = /^\/(?:driving-lessons-[a-z-]+)?$/;
  * from. Duplicated as a literal rather than imported because Pages Functions
  * are bundled separately from the app and cannot reach into src/.
  */
-const CANONICAL_HOST = 'freeflydriving.ca';
+const CANONICAL_HOST = 'www.freeflydriving.ca';
+
+/**
+ * The apex, which is currently not resolvable.
+ *
+ * Wix DNS holds the zone and cannot point an apex at a Pages project, so
+ * `freeflydriving.ca` has no A, AAAA or CNAME record at all. See the long note
+ * on `ORIGIN` in src/data/seo.ts for why the canonical host is `www.` until the
+ * zone moves onto Cloudflare.
+ */
+const APEX_HOST = 'freeflydriving.ca';
 
 /**
  * Hosts that serve the identical site and must not accumulate their own index.
  *
- * `www.` gets a permanent redirect to the apex, which is the only way to stop
- * the two ranking as separate duplicates of each other; a canonical tag alone
- * is a hint that Google is free to ignore. The deploy hosts get `noindex`
- * instead of a redirect, because redirecting them would break the ability to
- * test a deploy before the domain points at it.
+ * The apex gets a permanent redirect to the canonical host, which is the only
+ * way to stop the two ranking as separate duplicates of each other; a canonical
+ * tag alone is a hint that Google is free to ignore. The deploy hosts get
+ * `noindex` instead of a redirect, because redirecting them would break the
+ * ability to test a deploy before the domain points at it.
  */
 const isDeployHost = (host: string) =>
   host.endsWith('.pages.dev') || host.startsWith('new.');
@@ -140,11 +150,18 @@ export const onRequest = async (context: PagesContext): Promise<Response> => {
   const url = new URL(request.url);
   const host = url.hostname;
 
-  // www → apex, before any work is done. 301 so the redirect is cached and the
+  // apex → www, before any work is done. 301 so the redirect is cached and the
   // link equity consolidates onto the canonical host rather than being split
   // across two hostnames serving byte-identical pages. Path and query are
   // preserved, so a deep link into a city page survives the hop.
-  if (host === `www.${CANONICAL_HOST}`) {
+  //
+  // This runs in the direction opposite to what the README describes, and it is
+  // deliberate: the apex has no DNS record, so the old www → apex redirect sent
+  // every visitor who typed the advertised domain to a host that does not
+  // resolve. Nothing can reach this branch today (an unresolvable host never
+  // gets as far as a request), so it costs nothing, and it is already correct
+  // for the moment an apex record starts existing.
+  if (host === APEX_HOST) {
     url.hostname = CANONICAL_HOST;
     // Cloudflare already upgrades http at the edge, so this is belt and braces:
     // it guarantees the canonical redirect can never resolve to an http URL and
