@@ -83,7 +83,7 @@ new.freeflydriving.ca  (Pages: freefly-driving)
 └── /api/contact                    functions/api/contact.ts → service binding ↓
                                                                     │
                           freefly-mailer (Worker, no public route)  ┘
-                          └── send_email + ratelimit bindings → nakibshaikh786@gmail.com
+                          └── send_email + ratelimit bindings → freeflydriving@gmail.com
 ```
 
 The mailer is a **separate Worker with no route of its own**. The only way to
@@ -264,6 +264,92 @@ triangle count is where it is.
 > two native libvips builds load into one process, and every texture encode dies
 > with a bogus colourspace error.
 
+## Search and AI answer engines
+
+The homepage is a client-rendered SPA: `dist/index.html` is a `<div id="root">`
+and a module script. Googlebot renders that on a second pass. **ClaudeBot,
+GPTBot, PerplexityBot, Applebot and CCBot do not run JavaScript at all**, so to
+the crawlers that now feed AI answers the app is a blank page.
+
+`scripts/build-seo.mjs` runs after `vite build` and generates the crawlable
+surface into `dist/`. It is wired into `npm run build`; `npm run seo` re-runs
+just the generator against an existing `dist/`.
+
+| Output | What it is |
+| --- | --- |
+| `/driving-lessons-<slug>` × 12 | Static landing page per service area. **Zero JavaScript**, ~850 words, content in the markup. |
+| `/driving-lessons-<slug>.md`, `/index.md` | Markdown twin of every page. A city page is 21 kB of HTML, 4.6 kB of markdown. |
+| `/llms.txt`, `/llms-full.txt` | Site index and full text for LLM ingestion. |
+| `/robots.txt` | Per-crawler rules plus Cloudflare `Content-Signal`. **Mirrored into `public/`** so it is in version control. |
+| `/sitemap.xml` | Every indexable HTML page (14), with image entries and a real `lastmod` taken from the mtime of the data that produced each page. No `priority`/`changefreq` — Google and Bing both ignore them. **Mirrored into `public/`.** |
+
+`robots.txt` and `sitemap.xml` are the two files anyone auditing the site opens
+first, so they are written to `public/` as well as `dist/` and committed. They
+are still generated: both carry a header saying so, and hand edits are
+overwritten by the next build. The `.md` twins and `llms.txt` are deliberately
+*not* in the sitemap — they are alternate representations of pages already
+listed, and submitting both invites a duplicate-content call on the pair.
+| `/.well-known/api-catalog` | RFC 9727 linkset. |
+| `/.well-known/mcp/server-card.json`, `/.well-known/agent-skills/index.json` | Agent-readiness discovery documents. |
+
+It also rewrites `dist/index.html`: the JSON-LD becomes a full `@graph`
+(`WebSite` + `DrivingSchool` + `FAQPage`, with offers priced from the live Wix
+read at build time), and a `<noscript>` summary is injected after `#root` so a
+non-rendering crawler gets the business facts rather than an empty div.
+
+`functions/_middleware.ts` serves the markdown twin on `Accept: text/markdown`
+(q-values respected, `/api/*` passed straight through), and stamps
+`X-Robots-Tag: noindex` on any `.pages.dev` host.
+
+### Adding a service area
+
+One object in `src/data/cities.ts`. The page, its markdown twin, the sitemap
+entry, the `llms.txt` line, the `_headers` block and the footer link all follow.
+
+**Read the honesty rules in that file's header before adding one.** City pages
+that differ only by a find-and-replace on the name are doorway pages, which
+Google demotes by name. The `roads` field is what stops that: if there is
+nothing specific to say about driving there, the city does not get a page.
+
+### Hosts
+
+`https://freeflydriving.ca` — the apex, no `www` — is the canonical origin.
+Every canonical tag, `og:url`, JSON-LD `@id`, sitemap `<loc>` and llms.txt link
+derives from `ORIGIN` in `src/data/seo.ts`. Change it there and nothing else.
+
+`functions/_middleware.ts` enforces it:
+
+| Host | Behaviour |
+| --- | --- |
+| `freeflydriving.ca` | Serves normally. The canonical host. |
+| `www.freeflydriving.ca` | **301 to the apex**, path and query preserved, forced to https. A canonical tag is a hint Google may ignore; the redirect is not. |
+| `new.freeflydriving.ca`, `*.pages.dev` | Serves normally with `X-Robots-Tag: noindex, nofollow`. They serve byte-identical pages, so left alone they compete with production. |
+
+The `noindex` is applied by hostname, so it never touches the canonical domain
+and there is nothing to undo after the cutover.
+
+### Cutover checklist
+
+The generator's price fetch already tries the apex, then `new.`, then
+`pages.dev`, so builds produce correct prices on either side of the move.
+
+1. Point `freeflydriving.ca` at the Pages project (Pages → freefly-driving →
+   Custom domains). Add `www.freeflydriving.ca` as a domain too — it has to
+   reach the project for the middleware to redirect it.
+2. `npm run deploy`.
+3. `npm run deploy:mailer`. The enquiry email hotlinks its logo from the apex,
+   so its header stays broken until this runs **after** DNS resolves.
+4. Verify `https://freeflydriving.ca/` in Search Console (domain property, so
+   it covers every subdomain), then submit
+   `https://freeflydriving.ca/sitemap.xml`.
+5. Spot-check: `curl -sI https://www.freeflydriving.ca/ | grep -i location`
+   should show a 301 to the apex.
+
+> [!NOTE]
+> Do not submit the sitemap before step 1. Until DNS moves, the apex is still
+> the Wix site, so every URL in the sitemap would 404 or serve someone else's
+> page and the property would be recorded as broken.
+
 ## Real content and where it came from
 
 Nothing on this site is invented. Sources, so they can be re-verified:
@@ -276,6 +362,7 @@ Nothing on this site is invented. Sources, so they can be re-verified:
 | Instructor first name ("Harry") | Named repeatedly across those reviews |
 | Student pass photos | Supplied by the client, `public/Pics/` |
 | Phone, email, socials, tagline | freeflydriving.ca |
+| City driving conditions on the service-area pages | Written from the observable road network (grades, arterials, interchanges, crossings). No ICBC office addresses are claimed anywhere; see `CITY_PLACEHOLDER`. |
 
 Two supplied images (`jj result.jpg` and `sheet.jpg`) are photographs of
 completed ICBC road test result forms carrying candidate names and licence

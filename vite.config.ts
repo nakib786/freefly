@@ -1,4 +1,4 @@
-import { copyFileSync, createReadStream, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, createReadStream, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { fileURLToPath, URL } from 'node:url';
 
@@ -57,27 +57,46 @@ function copySourceModel(): Plugin {
 }
 
 /**
- * Clean URLs for the extra document in dev.
+ * Clean URLs for every extra document, in both dev and preview.
  *
  * Cloudflare Pages serves `credits.html` at `/credits` on its own, so the
- * deployed link works without any config. The dev server does not, and a footer
- * link that 404s locally is the kind of thing that gets "fixed" by changing the
- * link to the ugly URL. Rewriting here keeps one href correct in both places.
+ * deployed links work without any config. Neither Vite server does, and a
+ * footer link that 404s locally is the kind of thing that gets "fixed" by
+ * changing the link to the ugly URL. Rewriting here keeps one href correct
+ * everywhere.
+ *
+ * Preview matters as much as dev now: the generated city pages only exist in
+ * `dist/`, so `vite preview` is the only local way to see what actually
+ * deploys, and it 404s on an extensionless path exactly like dev did.
  */
 function cleanUrls(): Plugin {
+  /**
+   * `from` is where the documents live for that server: the project root in
+   * dev, `dist/` in preview. The rewrite only fires when the .html actually
+   * exists there, so an unbuilt city page still 404s honestly instead of being
+   * rewritten to a path that 404s for a confusing reason.
+   */
+  const rewriter = (from: URL) => (req: IncomingMessage, _res: ServerResponse, next: () => void) => {
+    // Split the query off first, or ?scene=full (the QA flag the whole
+    // 3D path is exercised with) misses the match and falls through to a 404.
+    const [path, query] = (req.url ?? '').split('?');
+
+    if (/^\/[a-z0-9-]+\/?$/i.test(path)) {
+      const name = path.replace(/^\/|\/$/g, '');
+      if (existsSync(fileURLToPath(new URL(`${name}.html`, from)))) {
+        req.url = `/${name}.html${query ? `?${query}` : ''}`;
+      }
+    }
+    next();
+  };
+
   return {
     name: 'freefly:clean-urls',
-    apply: 'serve',
     configureServer(server) {
-      server.middlewares.use((req, _res, next) => {
-        // Split the query off first, or ?scene=full (the QA flag the whole
-        // 3D path is exercised with) misses the match and falls through to a 404.
-        const [path, query] = (req.url ?? '').split('?');
-        if (path === '/credits' || path === '/credits/') {
-          req.url = `/credits.html${query ? `?${query}` : ''}`;
-        }
-        next();
-      });
+      server.middlewares.use(rewriter(new URL('./', import.meta.url)));
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(rewriter(new URL('./dist/', import.meta.url)));
     },
   };
 }

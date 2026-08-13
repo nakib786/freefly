@@ -36,8 +36,17 @@ type Env = {
 };
 
 /** Must match `destination_address` in wrangler.toml. */
-const DESTINATION = 'nakibshaikh786@gmail.com';
-const SITE = 'https://new.freeflydriving.ca';
+const DESTINATION = 'freeflydriving@gmail.com';
+/**
+ * Canonical site origin. Must match `ORIGIN` in src/data/seo.ts.
+ *
+ * ⚠ The logo below is hotlinked from this host, so the enquiry emails only
+ * render their header once the apex actually serves this project. Redeploy the
+ * mailer (`npm run deploy:mailer`) after the DNS cutover, not before.
+ */
+const SITE = 'https://freeflydriving.ca';
+/** Shown in the email footer, without the scheme. */
+const SITE_LABEL = 'freeflydriving.ca';
 /** Rendered in the email header. PNG, not SVG, because email clients won't render SVG. */
 const LOGO_URL = `${SITE}/apple-touch-icon.png`;
 
@@ -146,7 +155,7 @@ function renderHtml(enquiry: Enquiry, meta: { when: string; country: string }) {
 
       <tr><td style="padding:28px 32px 32px">
         <p style="margin:24px 0 0;padding-top:18px;border-top:1px solid #ece7e0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;line-height:1.7;letter-spacing:.08em;color:#a8a099">
-          Sent from <a href="${SITE}" style="color:#0d4a92;text-decoration:none">new.freeflydriving.ca</a> · ${escapeHtml(meta.country)} · ${escapeHtml(meta.when)}<br />
+          Sent from <a href="${SITE}" style="color:#0d4a92;text-decoration:none">${SITE_LABEL}</a> · ${escapeHtml(meta.country)} · ${escapeHtml(meta.when)}<br />
           Delivered by <a href="https://aurorabusiness.ca" style="color:#0d4a92;text-decoration:none">Aurora N&amp;N Business Solutions Inc.</a>
         </p>
       </td></tr>
@@ -170,7 +179,7 @@ function renderText(enquiry: Enquiry, meta: { when: string; country: string }) {
     enquiry.message || '(none)',
     '',
     '--',
-    `Sent from new.freeflydriving.ca · ${meta.country} · ${meta.when}`,
+    `Sent from ${SITE_LABEL} · ${meta.country} · ${meta.when}`,
     'Delivered by Aurora N&N Business Solutions Inc.',
   ].join('\n');
 }

@@ -9,7 +9,16 @@
       name="description"
       content="Class 5 and Class 7 driving lessons in a Tesla Model 3. Free Fly Driving School serves Burnaby, Vancouver and Coquitlam in the Lower Mainland, BC."
     />
-    <link rel="canonical" href="https://www.freeflydriving.ca/" />
+    <link rel="canonical" href="https://freeflydriving.ca/" />
+    <!--
+      `max-image-preview:large` is what lets Google use the hero render as the
+      thumbnail in a rich result instead of a 100px square, and it is opt-in.
+      The markdown alternate is the same page for anything that asks for
+      text/markdown; functions/_middleware.ts serves it on content negotiation
+      too, for agents that ask by Accept header rather than by URL.
+    -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="alternate" type="text/markdown" href="https://freeflydriving.ca/index.md" />
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="icon" href="/favicon-96.png" type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -20,8 +29,8 @@
       property="og:description"
       content="Class 5 and Class 7 driving lessons in a Tesla Model 3, across Burnaby, Vancouver and Coquitlam. Lesson packages and road-test prep with the car provided."
     />
-    <meta property="og:url" content="https://www.freeflydriving.ca/" />
-    <meta property="og:image" content="https://www.freeflydriving.ca/models/tesla-static-hero.webp" />
+    <meta property="og:url" content="https://freeflydriving.ca/" />
+    <meta property="og:image" content="https://freeflydriving.ca/models/tesla-static-hero.webp" />
     <meta property="og:locale" content="en_CA" />
     <meta name="twitter:card" content="summary_large_image" />
 
@@ -31,16 +40,23 @@
       from the live Wix Pricing Plans. Nothing is estimated to make a rich
       result look better; an invented rating is precisely what earns a manual
       action, and aggregateRating in particular is one Google spot-checks.
+
+      ⚠ scripts/build-seo.mjs REPLACES this whole block in dist/index.html with
+      a fuller @graph (WebSite + DrivingSchool + FAQPage, prices read live from
+      Wix at build time). What is written here is the floor, not the ceiling: it
+      is what ships if the generator is skipped, so it must stay valid on its
+      own. Keep it accurate; do not try to keep it in sync with the generated
+      version by hand.
     -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "DrivingSchool",
         "name": "Free Fly Driving School Limited",
-        "url": "https://www.freeflydriving.ca/",
+        "url": "https://freeflydriving.ca/",
         "telephone": "+1-250-572-1808",
         "email": "freeflydriving@gmail.com",
-        "image": "https://www.freeflydriving.ca/models/tesla-static-hero.webp",
+        "image": "https://freeflydriving.ca/models/tesla-static-hero.webp",
         "priceRange": "$90-$1600",
         "currenciesAccepted": "CAD",
         "foundingDate": "2022",

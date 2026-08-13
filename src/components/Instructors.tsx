@@ -14,7 +14,7 @@
 import { useState } from 'react';
 
 import { Scrim, Section } from '@/components/primitives';
-import { BUSINESS, FOUNDED, INSTRUCTOR, JOURNEY } from '@/data/business';
+import { BUSINESS, FOUNDED, INSTRUCTOR, JOURNEY, LICENCE_PATH } from '@/data/business';
 import { INSTRUCTOR_PHOTO } from '@/data/photos.generated';
 import { REVIEW_SUMMARY } from '@/data/reviews';
 
@@ -136,9 +136,9 @@ export function Instructors() {
           }}
         />
         <p className="reveal type-telemetry mb-8 text-cream-dim" data-reveal>
-          {BUSINESS.licenceClasses.join(' to ')}: how it runs · teaching since {FOUNDED}
+          {LICENCE_PATH}: how it runs · teaching since {FOUNDED}
         </p>
-        <ol className="grid gap-px md:grid-cols-4">
+        <ol className="grid gap-px sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           {JOURNEY.map((stage) => (
             <li key={stage.step} className="reveal rule-t pt-6" data-reveal>
               <span className="font-display text-4xl font-extrabold tracking-tight text-azure">

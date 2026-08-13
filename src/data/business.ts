@@ -6,6 +6,7 @@
  * marked as a placeholder (see `PLACEHOLDERS` at the bottom, which is what
  * drives the dev-only "needs real content" markers in the UI).
  */
+import { CITY_PLACEHOLDER } from './cities';
 
 export const BUSINESS = {
   legalName: 'Free Fly Driving School Limited',
@@ -20,7 +21,7 @@ export const BUSINESS = {
   /** Cities named in the live Wix pricing plan perks. */
   cities: ['Burnaby', 'Vancouver', 'Coquitlam'],
   licenceClasses: ['Class 5', 'Class 7'],
-  currentSite: 'https://www.freeflydriving.ca',
+  currentSite: 'https://freeflydriving.ca',
 
   /** From the verified Google Business Profile (read 2026-08-11). */
   address: {
@@ -125,15 +126,27 @@ export const TESLA_ADVANTAGES = [
 ] as const;
 
 /**
- * Steps from "never driven" to "licensed". Structure is ours; the substance
- * comes from the licence classes and plan tiers the business actually sells.
+ * Steps from "never driven" to a full licence. Structure is ours; the substance
+ * is BC's Graduated Licensing Program, which the labels must match exactly:
+ * 7L is the learner stage, 7N the novice stage reached by passing the Class 7
+ * road test, and Class 5 the full licence reached by passing the Class 5 road
+ * test. Calling any of those by the wrong name misinforms a student about which
+ * test they are actually booking, so do not shorten or reorder them.
  */
 export const JOURNEY = [
-  { step: 'L', label: 'Class 7 learner', note: 'Knowledge test passed, ready for the wheel' },
+  { step: '7L', label: 'Learner', note: 'Knowledge test passed, ready for the wheel' },
   { step: '01', label: 'Lessons', note: 'Beginner, intermediate or advanced, depending where you start' },
   { step: '02', label: 'Road test prep', note: 'Warm-up class, then our car for the test' },
-  { step: 'N', label: 'Class 5 novice', note: 'Licensed' },
+  { step: '7N', label: 'Novice', note: 'Class 7 road test passed, driving on your own' },
+  { step: '5', label: 'Full licence', note: 'Class 5 road test passed, restrictions lifted' },
 ] as const;
+
+/**
+ * Direction of travel through the classes above. `licenceClasses` is stored in
+ * plain "we teach both" order for the header and footer; a student progresses
+ * the other way, so the journey heading needs its own string.
+ */
+export const LICENCE_PATH = 'Class 7 to Class 5';
 
 /**
  * Anything on the page that is NOT real client content yet. Surfaced in the
@@ -141,6 +154,7 @@ export const JOURNEY = [
  * dummy section can never quietly ship.
  */
 export const PLACEHOLDERS = [
+  CITY_PLACEHOLDER,
   'Instructor credentials: Harry\'s photo and bio are in. Certifications, licence-instructor number and years of experience are still not supplied, so none are claimed.',
   'Reviews: 3 of 153 are quoted. Two are excerpts (Google truncated them) and are marked as such in the UI. Worth pasting the full text of both into src/data/reviews.ts.',
   'Award backlink: the "top 3" source domain (vancouverdigitalweek.com) 301-redirects to an unrelated site, so the badge renders unlinked. Client is checking; leave as-is meanwhile.',

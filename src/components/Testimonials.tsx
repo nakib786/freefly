@@ -1,13 +1,17 @@
 /**
  * Reviews and the pass wall.
  *
- * Everything here is real: a 5.0/153 aggregate from the verified Google
- * Business Profile, three reviews quoted verbatim, and ten photographs of
- * actual students holding their ICBC pass slips beside the school's Model 3.
+ * Everything here is real: the aggregate from the verified Google Business
+ * Profile, three reviews quoted verbatim, and ten photographs of actual
+ * students holding their ICBC pass slips beside the school's Model 3.
  *
- * Two honesty rules are enforced in the markup rather than left to good
+ * Three honesty rules are enforced in the markup rather than left to good
  * intentions:
  *
+ *  - The review count is only ever printed as a review count. It is not a
+ *    pass count and must never be presented as one: many more students have
+ *    passed than have left a review, so the two numbers are not the same
+ *    figure and the review count is the smaller of them.
  *  - Reviews flagged `truncated` render a visible ellipsis and link out to the
  *    full text on Google. Presenting a cut-off review as a complete one is how
  *    a genuine testimonial quietly becomes a fabricated one.
@@ -120,14 +124,21 @@ export function Testimonials() {
       <Scrim from="top" />
 
       <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
+        {/* Deliberately no number in this headline. The only count we can
+            verify is the Google review count, and reviews are not passes: far
+            more students have passed than have left a review, so printing the
+            review count here would both misdescribe it and undersell the
+            school. The rating readout beside it carries the number, correctly
+            labelled as reviews. */}
         <h2 className="reveal type-heading text-display max-w-[10ch] text-cream" data-reveal>
-          {REVIEW_SUMMARY.count} passes,
+          Five stars,
           <br />
           no exceptions
         </h2>
 
         {/* The aggregate, set as an instrument readout. This is the single
-            strongest trust signal the business has: 5.0 across 153 reviews. */}
+            strongest trust signal the business has: a 5.0 average with every
+            review counted. */}
         <a
           href={REVIEW_SUMMARY.url}
           target="_blank"

@@ -10,6 +10,7 @@
  */
 import { Wordmark } from '@/components/primitives';
 import { BUSINESS, SOCIALS } from '@/data/business';
+import { CITIES, cityPath } from '@/data/cities';
 import { DEVELOPER } from '@/data/credits';
 
 /**
@@ -80,7 +81,29 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="rule-t mt-14 flex flex-col gap-4 pt-8 md:flex-row md:items-center md:justify-between">
+        {/* Service areas.
+            These are not decoration and they are not a keyword list: the city
+            pages are static documents generated outside the React build, so
+            this row is the only path a crawler has from the homepage to them.
+            Without it they are orphans, and an orphan page does not get
+            indexed however good it is. */}
+        <nav aria-label="Service areas" className="rule-t mt-14 pt-8">
+          <p className="type-telemetry mb-4 text-cream-faint">Driving lessons by area</p>
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {CITIES.map((city) => (
+              <li key={city.slug}>
+                <a
+                  href={cityPath(city)}
+                  className="type-telemetry text-cream-dim transition-colors hover:text-azure-bright"
+                >
+                  {city.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="rule-t mt-10 flex flex-col gap-4 pt-8 md:flex-row md:items-center md:justify-between">
           <p className="type-telemetry flex flex-wrap items-center gap-x-3 gap-y-1 text-cream-faint">
             <span>
               © {new Date().getFullYear()} {BUSINESS.legalName}
