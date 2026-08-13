@@ -1,5 +1,5 @@
 /**
- * GET /api/plans — Wix Pricing Plans proxy (Cloudflare Pages Function).
+ * GET /api/plans: Wix Pricing Plans proxy (Cloudflare Pages Function).
  *
  * Exists so the Wix API key stays server-side. Calling wixapis.com straight
  * from the browser would mean shipping a key that can read the site's plans to
@@ -71,7 +71,7 @@ const EDGE_TTL_SECONDS = 15;
 /**
  * The copy handed to the browser is never stored. A browser cache stacks on top
  * of the edge TTL, and `stale-while-revalidate` in particular paints the *old*
- * price and only picks the new one up on the load after — which is precisely
+ * price and only picks the new one up on the load after, which is precisely
  * what made a saved edit look like it had not synced at all.
  */
 const CLIENT_CACHE = 'no-store';
@@ -119,8 +119,8 @@ export const onRequestGet = async (context: PagesContext): Promise<Response> => 
   /**
    * `?fresh=1` re-reads Wix regardless of what is at the edge, and refreshes
    * the stored copy for everyone else while it is at it. The cache key below is
-   * a fixed path, so without an explicit bypass there is no way at all — not a
-   * hard refresh, not incognito, not a redeploy — to make the edge re-read
+   * a fixed path, so without an explicit bypass there is no way at all (not a
+   * hard refresh, not incognito, not a redeploy) to make the edge re-read
    * before the TTL lapses. That made "did my edit actually save?" unanswerable.
    */
   const bypass = new URL(request.url).searchParams.has('fresh');
@@ -158,7 +158,7 @@ export const onRequestGet = async (context: PagesContext): Promise<Response> => 
   }
 
   if (!upstream.ok) {
-    // Surface the status but never the body — it can echo the key back.
+    // Surface the status but never the body; it can echo the key back.
     return json({ configured: true, error: `upstream_${upstream.status}`, plans: [] }, 502, {
       'cache-control': 'no-store',
     });

@@ -1,9 +1,9 @@
 /**
- * freefly-mailer — sends the site's enquiry form to the school's inbox.
+ * freefly-mailer: sends the site's enquiry form to the school's inbox.
  *
  * Invoked ONLY through a service binding from the freefly-driving Pages project
  * (`/api/contact` → `env.MAILER.fetch`). It has no public route and no custom
- * domain, so the only way in is via that binding — which is why there is no
+ * domain, so the only way in is via that binding, which is why there is no
  * CORS handling here and no need for one.
  *
  * It is a separate Worker purely because Pages cannot hold the bindings this
@@ -21,7 +21,7 @@
  *     taken from request data.
  *   - Every value that lands in a MIME header is stripped of CR/LF first.
  *     Without that, a newline in the name field injects arbitrary headers
- *     (Bcc:, etc.) — classic email header injection.
+ *     (Bcc:, etc.). That is classic email header injection.
  *   - Field lengths capped; all interpolated values HTML-escaped.
  *   - Hidden `website` honeypot: accepted and discarded so bots see success.
  */
@@ -38,7 +38,7 @@ type Env = {
 /** Must match `destination_address` in wrangler.toml. */
 const DESTINATION = 'nakibshaikh786@gmail.com';
 const SITE = 'https://new.freeflydriving.ca';
-/** Rendered in the email header. PNG, not SVG — email clients won't render SVG. */
+/** Rendered in the email header. PNG, not SVG, because email clients won't render SVG. */
 const LOGO_URL = `${SITE}/apple-touch-icon.png`;
 
 const LIMITS = { name: 120, phone: 40, email: 200, plan: 80, message: 4000 } as const;
@@ -47,7 +47,7 @@ const LIMITS = { name: 120, phone: 40, email: 200, plan: 80, message: 4000 } as 
 
 /**
  * Strips CR/LF and control characters. Applied to everything that ends up in a
- * MIME header — subject, display names, Reply-To — to prevent header injection.
+ * MIME header (subject, display names, Reply-To) to prevent header injection.
  *
  * The control class uses explicit \u escapes rather than literal characters:
  * a literal control range is invisible in an editor and silently degrades to a
@@ -82,7 +82,7 @@ type Enquiry = { name: string; phone: string; email: string; plan: string; messa
  * Deliberately built to match the house style already used for the other
  * Aurora client sites (The Ninth House): logo card on a tinted ground, a
  * labelled detail table, and the Aurora attribution in the footer. The palette
- * and type are Free Fly's own — azure/marine/cream, mono for labels — so the
+ * and type are Free Fly's own (azure/marine/cream, mono for labels), so the
  * email reads as the same system as the website it came from.
  *
  * Table-based layout with inline styles because that is what actually survives
@@ -91,8 +91,8 @@ type Enquiry = { name: string; phone: string; email: string; plan: string; messa
 function renderHtml(enquiry: Enquiry, meta: { when: string; country: string }) {
   const rows: [string, string][] = [
     ['Name', enquiry.name],
-    ['Phone', enquiry.phone || '—'],
-    ['Email', enquiry.email || '—'],
+    ['Phone', enquiry.phone || 'Not given'],
+    ['Email', enquiry.email || 'Not given'],
     ['Interested in', enquiry.plan || 'Not specified'],
   ];
 
@@ -102,7 +102,7 @@ function renderHtml(enquiry: Enquiry, meta: { when: string; country: string }) {
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>New lesson enquiry</title></head>
 <body style="margin:0;padding:0;background:#f4f2ee;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0">${escapeHtml(enquiry.name)} — ${escapeHtml(enquiry.plan || 'enquiry')}${'&nbsp;'.repeat(60)}</div>
+<div style="display:none;max-height:0;overflow:hidden;opacity:0">${escapeHtml(enquiry.name)} · ${escapeHtml(enquiry.plan || 'enquiry')}${'&nbsp;'.repeat(60)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f2ee;padding:32px 16px">
   <tr><td align="center">
     <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #e6e0d8">
@@ -159,17 +159,17 @@ function renderHtml(enquiry: Enquiry, meta: { when: string; country: string }) {
 
 function renderText(enquiry: Enquiry, meta: { when: string; country: string }) {
   return [
-    'NEW LESSON ENQUIRY — FREE FLY DRIVING SCHOOL',
+    'NEW LESSON ENQUIRY · FREE FLY DRIVING SCHOOL',
     '',
     `Name:          ${enquiry.name}`,
-    `Phone:         ${enquiry.phone || '—'}`,
-    `Email:         ${enquiry.email || '—'}`,
+    `Phone:         ${enquiry.phone || 'Not given'}`,
+    `Email:         ${enquiry.email || 'Not given'}`,
     `Interested in: ${enquiry.plan || 'Not specified'}`,
     '',
     'Message:',
     enquiry.message || '(none)',
     '',
-    '—',
+    '--',
     `Sent from new.freeflydriving.ca · ${meta.country} · ${meta.when}`,
     'Delivered by Aurora N&N Business Solutions Inc.',
   ].join('\n');
@@ -182,7 +182,7 @@ function buildMessage(enquiry: Enquiry, env: Env, meta: { when: string; country:
 
   // Subject leads with the plan so the inbox list is scannable without opening.
   const plan = enquiry.plan && enquiry.plan !== 'Not sure yet' ? ` · ${enquiry.plan}` : '';
-  msg.setSubject(headerSafe(`Lesson enquiry — ${enquiry.name}${plan}`, 160));
+  msg.setSubject(headerSafe(`Lesson enquiry: ${enquiry.name}${plan}`, 160));
 
   // Reply goes straight to the student, not to the sending address.
   // Must be a Mailbox instance: mimetext validates Reply-To with an
@@ -204,14 +204,14 @@ async function handle(request: Request, env: Env): Promise<Response> {
 
   // The end user's IP, forwarded by the Pages Function. Over a service binding
   // CF-Connecting-IP is the caller's, not the visitor's, so the real address
-  // arrives in X-Enquirer-IP — otherwise every submission would share one rate
+  // arrives in X-Enquirer-IP; otherwise every submission would share one rate
   // limit bucket and the first spammer would lock out every real student.
   const ip =
     request.headers.get('X-Enquirer-IP') ?? request.headers.get('CF-Connecting-IP') ?? 'unknown';
   const { success } = await env.RATE_LIMITER.limit({ key: ip });
   if (!success) {
     return json(
-      { error: 'rate_limited', message: 'Too many enquiries just now — please call us instead.' },
+      { error: 'rate_limited', message: 'Too many enquiries just now. Please call us instead.' },
       429,
     );
   }
@@ -229,7 +229,7 @@ async function handle(request: Request, env: Env): Promise<Response> {
   const field = (key: keyof typeof LIMITS) =>
     typeof body[key] === 'string' ? (body[key] as string).trim().slice(0, LIMITS[key]) : '';
 
-  // Honeypot — a hidden input real users never see. 200 so bots don't retune.
+  // Honeypot: a hidden input real users never see. 200 so bots don't retune.
   if (typeof body.website === 'string' && body.website.trim() !== '') {
     return json({ ok: true }, 200);
   }
@@ -259,10 +259,10 @@ async function handle(request: Request, env: Env): Promise<Response> {
       }),
     );
   } catch (error) {
-    // Never surface the cause — it leaks the sending address and routing setup.
+    // Never surface the cause; it leaks the sending address and routing setup.
     console.error('contact send failed', error);
     return json(
-      { error: 'send_failed', message: 'Could not send just now — please call us.' },
+      { error: 'send_failed', message: 'Could not send just now. Please call us.' },
       502,
     );
   }

@@ -26,7 +26,7 @@ export default function App() {
 
   if (import.meta.env.DEV) {
     console.info(
-      `%cFree Fly — ${PLACEHOLDERS.length} placeholders outstanding`,
+      `%cFree Fly: ${PLACEHOLDERS.length} placeholders outstanding`,
       'color:#1a72d6;font-weight:bold',
     );
     for (const item of PLACEHOLDERS) console.info(`  • ${item}`);

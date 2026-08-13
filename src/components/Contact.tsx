@@ -1,13 +1,13 @@
 /**
  * Contact.
  *
- * The form posts to /api/contact — a Pages Function in this same project that
+ * The form posts to /api/contact, a Pages Function in this same project that
  * mails the enquiry to the school via Cloudflare Email Routing. Same-origin, so
  * there is no CORS involved.
  *
  * The <form> keeps a real `action` and `method` pointing at the same endpoint,
  * so with JavaScript unavailable the browser performs a normal POST and the
- * enquiry still arrives — the fetch path only exists to keep the user on the
+ * enquiry still arrives. The fetch path only exists to keep the user on the
  * page and show inline status.
  */
 import { useState } from 'react';
@@ -19,7 +19,7 @@ const FIELD =
   'w-full border border-ink-600 bg-ink-900/70 px-4 py-3 text-cream placeholder:text-ink-500 transition-colors focus:border-azure focus:outline-none';
 
 /**
- * Each network's name is set in that network's own brand colour — the two
+ * Each network's name is set in that network's own brand colour. The two
  * gradient marks (Instagram, TikTok) clip their gradient to the text, defined
  * in index.css. Written out as whole class strings rather than composed from
  * the label, because Tailwind's scanner only sees literals.
@@ -66,7 +66,7 @@ export function Contact() {
     } catch {
       setStatus({
         state: 'error',
-        message: 'Could not reach us — check your connection, or call instead.',
+        message: 'Could not reach us. Check your connection, or call instead.',
       });
     }
   }
@@ -81,7 +81,7 @@ export function Contact() {
             Book your first lesson
           </h2>
           <p className="reveal type-condensed mt-8 max-w-[42ch] text-xl text-cream-dim" data-reveal>
-            Call or message and we will match you to the right package — whether you have never sat
+            Call or message and we will match you to the right package, whether you have never sat
             behind a wheel or just need the car for your road test.
           </p>
 
@@ -90,7 +90,7 @@ export function Contact() {
             <Readout label="Email" value={BUSINESS.email} href={BUSINESS.emailHref} />
             <Readout
               label="Open"
-              value={`${BUSINESS.hours.days} · ${BUSINESS.hours.opens}–${BUSINESS.hours.closes}`}
+              value={`${BUSINESS.hours.days} · ${BUSINESS.hours.opens}-${BUSINESS.hours.closes}`}
             />
             <Readout label="Cities" value={BUSINESS.cities.join(' · ')} />
             <Readout
@@ -139,7 +139,7 @@ export function Contact() {
           <p className="type-telemetry text-azure">Enquiry</p>
 
           {/* Honeypot. Hidden from sight and from screen readers, and taken out
-              of the tab order, so no real user can fill it — but bots that
+              of the tab order, so no real user can fill it, but bots that
               blindly complete every input will, and the endpoint drops those. */}
           <div aria-hidden className="absolute h-0 w-0 overflow-hidden opacity-0">
             <label>
@@ -196,7 +196,7 @@ export function Contact() {
             aria-live="polite"
           >
             {status.state === 'sent'
-              ? `Sent — we'll be in touch. Need us sooner? Call ${BUSINESS.phone}.`
+              ? `Sent. We'll be in touch. Need us sooner? Call ${BUSINESS.phone}.`
               : status.state === 'error'
                 ? status.message
                 : status.state === 'sending'

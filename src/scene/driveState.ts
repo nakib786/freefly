@@ -20,7 +20,7 @@ export const driveState = {
  * Exponential smoothing that is correct at any frame rate.
  *
  * A naive `value += (target - value) * k` moves faster on a 144Hz display than
- * a 60Hz one — the camera would literally lag differently per monitor. This
+ * a 60Hz one, so the camera would literally lag differently per monitor. This
  * converts a per-second smoothing factor into a per-frame one.
  *
  * @param lambda higher = snappier. ~6 tracks scroll closely, ~2 is very floaty.

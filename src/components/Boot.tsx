@@ -2,16 +2,16 @@
  * The boot screen.
  *
  * Deliberately not a centred logo over a spinner, and not a rounded card with a
- * rail in it — that silhouette is the single most template-looking screen on the
+ * rail in it. That silhouette is the single most template-looking screen on the
  * web, and it would be the first thing a visitor ever sees of this site.
  *
  * Instead it is built from the page's own structural idea: a ruled instrument
  * panel read down the left gutter. The header is the nav's exact height and
  * gutter, carrying the same wordmark in the same place, so when the gate lifts
- * the mark does not move — the loader resolves into the page rather than being
+ * the mark does not move: the loader resolves into the page rather than being
  * replaced by it. Below that a real readout: the ASCII gauge, and under it the
  * actual jobs with their actual byte counts, which is the honest way to say
- * "this is what you are waiting for" (see useBootSequence.ts — every number
+ * "this is what you are waiting for" (see useBootSequence.ts, where every number
  * here is measured).
  *
  * The contact strip along the bottom is the important part. A gate that a
@@ -43,7 +43,7 @@ type Props = BootSequence & { onDismissed: () => void };
 /**
  * Measures how many characters actually fit rather than assuming a column
  * count: the gauge is drawn in Martian Mono at a fluid size, so the answer
- * changes with the viewport and again when the font itself finishes loading —
+ * changes with the viewport and again when the font itself finishes loading,
  * which, on this screen in particular, happens while it is on display.
  */
 function useColumns(target: React.RefObject<HTMLElement | null>) {
@@ -125,7 +125,7 @@ export function Boot({ jobs, progress, done, skip, onDismissed }: Props) {
   const percent = Math.round(progress * 100);
 
   // The page underneath is fully rendered and would otherwise scroll behind the
-  // overlay — which also scrubs the camera, so a visitor could arrive at a page
+  // overlay, which also scrubs the camera, so a visitor could arrive at a page
   // already halfway through its own sequence.
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -178,30 +178,30 @@ export function Boot({ jobs, progress, done, skip, onDismissed }: Props) {
         </div>
       </div>
 
-      {/* Statement and manifest at the top, gauge along the base — rather than
+      {/* Statement and manifest at the top, gauge along the base, rather than
           one centred stack, which is the loader-card silhouette this is meant
           to avoid. It also matches how the rest of the page reads: content set
           against the top rule, instrumentation along the bottom. */}
       {/* The statement and the gauge hold their space; the manifest is the band
           that gives. On a short window (a 720px laptop, a phone in landscape)
-          the rows clip from the bottom rather than shunting the gauge — and the
-          contact strip — off the screen entirely, which is the one thing on
+          the rows clip from the bottom rather than shunting the gauge (and the
+          contact strip) off the screen entirely, which is the one thing on
           here that must never happen. */}
       <div className="gutter mx-auto flex w-full min-h-0 max-w-[110rem] flex-1 flex-col gap-8 pt-10 pb-6 md:gap-10 md:pt-12 md:pb-8">
         <div className="shrink-0">
           <p className="type-telemetry text-azure">Getting you road ready</p>
-          {/* Dropped on a very short window — a landscape phone, a small laptop.
+          {/* Dropped on a very short window: a landscape phone, a small laptop.
               The gauge and the phone number are what this screen owes the
               visitor; the explanation is the part that can go. */}
           <p className="type-condensed mt-5 max-w-[34rem] text-xl text-cream md:text-2xl [@media(max-height:700px)]:hidden">
-            {BUSINESS.name} — lessons, road-test prep and our car for the test day. Setting the
+            {BUSINESS.name}: lessons, road-test prep and our car for the test day. Setting the
             site up now so it runs clean once you are in it. If you already know what you need,
             the number below works from here.
           </p>
         </div>
 
         {/* Full width and hairline-ruled, the same row treatment the pricing
-            rows use — the manifest is the middle band of the panel rather than
+            rows use. The manifest is the middle band of the panel rather than
             a sidebar, which is what carries the height on a large screen. */}
         {/* The fade is what makes the clipping read as a decision rather than a
             bug: a row sliced in half by an overflow edge looks broken, the same
@@ -264,7 +264,7 @@ export function Boot({ jobs, progress, done, skip, onDismissed }: Props) {
             <p className="type-telemetry text-cream-faint md:text-right">
               {BUSINESS.licenceClasses.join(' & ')} · {BUSINESS.cities.join(', ')}
               <br />
-              {BUSINESS.hours.days} {BUSINESS.hours.opens}–{BUSINESS.hours.closes}
+              {BUSINESS.hours.days} {BUSINESS.hours.opens}-{BUSINESS.hours.closes}
             </p>
           </div>
         </div>

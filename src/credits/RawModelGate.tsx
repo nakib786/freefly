@@ -3,7 +3,7 @@
  *
  * The rule this enforces is simple: until somebody presses the button, this
  * page costs the same as any other page of text. No GLB, no three.js, no
- * decoder — the viewer is behind a dynamic import, so the network sees nothing
+ * decoder: the viewer is behind a dynamic import, so the network sees nothing
  * until a person has read the size and chosen to pay it.
  *
  * That is also why the button carries the number. "View 3D model" with a 21.6 MB
@@ -18,7 +18,7 @@ import { detectCapability } from '@/lib/capability';
 const RawModelViewer = lazy(() => import('@/credits/RawModelViewer'));
 
 type Readiness = {
-  /** No usable WebGL — the button would only ever produce a black rectangle. */
+  /** No usable WebGL, so the button would only ever produce a black rectangle. */
   webgl: boolean;
   /** Underpowered device: it will probably load, and it will probably crawl. */
   heavy: boolean;
@@ -81,7 +81,7 @@ export function RawModelGate() {
             paragraph alone in the left quarter of it looks like a mistake. */}
         <div className="grid gap-8 md:grid-cols-2 md:gap-12">
           <p className="type-condensed text-lg text-cream-dim md:text-xl">
-            The original file is {mb(RAW_MODEL.bytes)} — roughly fifteen times what the car on the
+            The original file is {mb(RAW_MODEL.bytes)}, roughly fifteen times what the car on the
             homepage weighs, and it has to be decoded before anything appears. It is here so the
             licence can be checked against the real asset, not because the page needs it.
           </p>
@@ -119,7 +119,7 @@ export function RawModelGate() {
 
             <p className="type-telemetry text-cream-faint">
               {state?.saveData
-                ? 'Your browser is in data-saver mode — this will use about 22 MB.'
+                ? 'Your browser is in data-saver mode. This will use about 22 MB.'
                 : state?.heavy
                   ? 'This device looks low-powered; expect a slow load and a low frame rate.'
                   : 'Nothing downloads until you press this.'}

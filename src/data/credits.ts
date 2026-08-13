@@ -1,13 +1,13 @@
 /**
  * Everything the site owes an attribution to.
  *
- * Only one entry here is a legal obligation — the Sketchfab car is CC-BY 4.0,
+ * Only one entry here is a legal obligation: the Sketchfab car is CC-BY 4.0,
  * which requires the title, the author, a link to the material, the licence,
  * and an indication that it was modified. That is what MODEL and MODEL_CHANGES
  * below carry, and /credits is where they are published.
  *
- * The rest (type, code) is not strictly required — MIT and the OFL are both
- * satisfied by the notices shipped in node_modules — but a credits page that
+ * The rest (type, code) is not strictly required, since MIT and the OFL are both
+ * satisfied by the notices shipped in node_modules, but a credits page that
  * lists one dependency and hides the other twenty is not really a credits page.
  *
  * Nothing here is guessed. Where a designer, a maintainer or a canonical
@@ -33,27 +33,27 @@ export const MODEL = {
  */
 export const MODEL_CHANGES = [
   'Duplicate accessors, materials and textures collapsed; coincident vertices welded.',
-  'Geometry decimated per part with meshoptimizer — body panels, glass and lights left untouched, interior and chassis cut to 4–8% of their source triangles.',
+  'Geometry decimated per part with meshoptimizer: body panels, glass and lights left untouched, interior and chassis cut to 4-8% of their source triangles.',
   '22 PNG textures converted to WebP at quality 82 and capped at 1024px.',
   'Draco EDGEBREAKER compression, quantised P14 / N10 / UV12.',
-  'Paint, glass and emissive materials re-authored in code — the shipped car is pearl white, and several source materials export with wrong factors.',
+  'Paint, glass and emissive materials re-authored in code. The shipped car is pearl white, and several source materials export with wrong factors.',
   'Wheel meshes re-parented to four pivots so they can be rotated independently.',
 ] as const;
 
 /**
- * Read out of each GLB's JSON chunk, not estimated — accessor counts survive
+ * Read out of each GLB's JSON chunk, not estimated. Accessor counts survive
  * Draco compression, so the shipped figures are the real ones. Re-measure if a
  * decimation ratio changes; these are published to the visitor.
  */
 export const MODEL_BUILDS = [
   { label: 'Source (this page)', tris: 684_315, bytes: 22_671_680 },
-  { label: 'Shipped — desktop', tris: 366_721, bytes: 1_566_660 },
-  { label: 'Shipped — mobile', tris: 291_534, bytes: 1_242_560 },
+  { label: 'Shipped (desktop)', tris: 366_721, bytes: 1_566_660 },
+  { label: 'Shipped (mobile)', tris: 291_534, bytes: 1_242_560 },
 ] as const;
 
 export const RAW_MODEL = {
   /**
-   * Served from `assets/models/` — deliberately outside `public/`, so a 21.6 MB
+   * Served from `assets/models/`, deliberately outside `public/`, so a 21.6 MB
    * file can never be pulled in by anything except this page. A dev middleware
    * and a build-time copy both put it at this one path (see vite.config.ts).
    */
@@ -143,7 +143,7 @@ export const DEVELOPER = {
 
 /* ------------------------------------------------------------------ helpers -- */
 
-/** Bytes as MB to one decimal — the unit people recognise on a download prompt. */
+/** Bytes as MB to one decimal: the unit people recognise on a download prompt. */
 export function mb(bytes: number) {
   return `${(bytes / 1_048_576).toFixed(1)} MB`;
 }

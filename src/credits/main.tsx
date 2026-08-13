@@ -1,5 +1,5 @@
 /**
- * Entry for /credits. Separate document, separate bundle — see CreditsPage.tsx.
+ * Entry for /credits. Separate document, separate bundle. See CreditsPage.tsx.
  */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

@@ -37,7 +37,7 @@ The dev server runs on port 5180 (`.claude/launch.json` pins it).
 cp .env.example .env   # then paste the Wix API key into .env
 ```
 
-`.env` is gitignored. `.env.example` is committed — **never put a real key in
+`.env` is gitignored. `.env.example` is committed, so **never put a real key in
 it**. Only `npm run dev:full` reads these; plain `npm run dev` does not need
 them (it proxies `/api/plans` to the deployed site instead).
 
@@ -46,7 +46,7 @@ them (it proxies `/api/plans` to the deployed site instead).
 A price edited in the Wix dashboard shows up on the next page load, within the
 15-second edge TTL in `functions/api/plans.ts`. The browser is told `no-store`,
 so it never holds a copy of its own, and the page refetches when the tab is
-re-focused after 30s — edit in Wix, switch back to the site, see the new price.
+re-focused after 30s: edit in Wix, switch back to the site, see the new price.
 
 To skip the edge copy entirely and check what Wix currently returns:
 
@@ -56,16 +56,16 @@ curl -s "https://new.freeflydriving.ca/api/plans?fresh=1" -D - -o /dev/null | gr
 
 `x-plans-cache` is on every response: `hit` (edge copy), `miss` (read Wix and
 stored it), `bypass` (`?fresh=1`). If prices look wrong, that header separates
-"stale" from "broken" — and a `502` body with `error: upstream_*` means the key
+"stale" from "broken", and a `502` body with `error: upstream_*` means the key
 or its scope is the problem, not the cache.
 
 ### Dev-only pages
 
-- `/model-check.html` — compare the decimated LODs against the untouched source
+- `/model-check.html`: compare the decimated LODs against the untouched source
   at the real camera angles. Use this before changing any decimation ratio.
-- `/static-hero.html` — the bare render that `npm run hero` photographs.
+- `/static-hero.html`: the bare render that `npm run hero` photographs.
 
-Neither is in the production build — `build.rollupOptions.input` names only
+Neither is in the production build; `build.rollupOptions.input` names only
 `index.html` and `credits.html`.
 
 ### QA query string
@@ -74,7 +74,7 @@ Neither is in the production build — `build.rollupOptions.input` names only
 Required to exercise the 3D path in a headless or software-rendered browser,
 which the detection deliberately refuses to give real 3D to.
 
-## Architecture — two deployables, one origin
+## Architecture: two deployables, one origin
 
 ```
 new.freeflydriving.ca  (Pages: freefly-driving)
@@ -86,7 +86,7 @@ new.freeflydriving.ca  (Pages: freefly-driving)
                           └── send_email + ratelimit bindings → nakibshaikh786@gmail.com
 ```
 
-The mailer is a **separate Worker with no route of its own** — the only way to
+The mailer is a **separate Worker with no route of its own**. The only way to
 reach it is the `MAILER` service binding from `/api/contact`. Visitors only ever
 talk to `new.freeflydriving.ca`, so there is no CORS anywhere and no public
 email endpoint to abuse.
@@ -95,7 +95,7 @@ email endpoint to abuse.
 
 1. `send_email` and `ratelimits` are Workers-only bindings. Pages config
    rejects both outright, so a Pages Function cannot send mail.
-2. The fix for (1) would be migrating the site to a Worker with static assets —
+2. The fix for (1) would be migrating the site to a Worker with static assets,
    but that breaks the live domain. `freeflydriving.ca` runs on Wix nameservers
    (`ns2.wixdns.net`), so the zone is not on this Cloudflare account.
    `new.freeflydriving.ca` works today because Pages accepts a CNAME from
@@ -108,7 +108,7 @@ fold `mailer/src/index.ts` in, and `wrangler deploy`.
 
 ### Email
 
-Sent from `freefly-enquiries@aurorabusiness.ca` — that zone is on this account
+Sent from `freefly-enquiries@aurorabusiness.ca`. That zone is on this account
 with Email Routing enabled, which `freeflydriving.ca` is not. `Reply-To` carries
 the enquirer's own address, so replying from the inbox reaches the student
 directly rather than the sending address.
@@ -121,7 +121,7 @@ even if the code says otherwise.
 
 The template deliberately matches the house style used for the other Aurora
 client sites (The Ninth House): logo card, labelled detail table, Aurora
-attribution in the footer — in Free Fly's palette.
+attribution in the footer, in Free Fly's palette.
 
 ```bash
 npm run deploy
@@ -135,7 +135,7 @@ That builds and deploys both, mailer first.
 | --- | --- |
 | URL | https://freefly-driving.pages.dev |
 | Project | `freefly-driving` |
-| Cloudflare account | Nakibshaikh786@gmail.com — `47891dbd8bb00200d07113ef07d53fff` |
+| Cloudflare account | Nakibshaikh786@gmail.com (`47891dbd8bb00200d07113ef07d53fff`) |
 | Production branch | `main` |
 | Dashboard | https://dash.cloudflare.com/47891dbd8bb00200d07113ef07d53fff/pages/view/freefly-driving |
 
@@ -151,8 +151,8 @@ If wrangler picks the wrong account (the token can see three), set
 
 ### Still to do by hand
 
-- **Custom domain** — Pages → freefly-driving → Custom domains.
-- **Git integration** — currently direct-upload from the CLI. Connecting the
+- **Custom domain**: Pages → freefly-driving → Custom domains.
+- **Git integration**: currently direct-upload from the CLI. Connecting the
   repo gives preview deploys per branch; set build command `npm run build`,
   output directory `dist`.
 
@@ -182,7 +182,7 @@ variable:
 
 Without them, `/api/plans` returns `503 { configured: false }` and the pricing
 section renders its bundled fallback prices. That is a safe default, not a
-failure — but the prices then only change on redeploy, so set them.
+failure, but the prices then only change on redeploy, so set them.
 
 The key never reaches the browser: it lives only in the Function, which is why
 the site calls its own `/api/plans` rather than wixapis.com directly. There is
@@ -233,15 +233,15 @@ Read `src/scene/keyframes.ts` first; its header explains every knob.
 
 Three tiers, chosen in `src/lib/capability.ts`:
 
-- **full** — scroll-scrubbed camera, high LOD, shadows.
-- **lite** — low LOD, no shadows, reduced lighting. For low-memory/low-core
+- **full**: scroll-scrubbed camera, high LOD, shadows.
+- **lite**: low LOD, no shadows, reduced lighting. For low-memory/low-core
   devices and small touch screens, and demoted into automatically if a real
   frame-rate probe measures under 24 fps.
-- **none** — no WebGL at all. Renders `public/models/tesla-static-hero.webp`.
+- **none**: no WebGL at all. Renders `public/models/tesla-static-hero.webp`.
   Devices in this tier never download three.js.
 
 `prefers-reduced-motion` keeps the 3D but freezes the camera at `STATIC_FRAMING`
-and disables content reveals — the preference is about motion, not about 3D.
+and disables content reveals; the preference is about motion, not about 3D.
 
 ## The 3D asset
 
@@ -249,7 +249,7 @@ Source: **"Tesla 2018 Model 3" by Ameer Studio**, Sketchfab, CC-BY 4.0.
 
 The licence requires attribution and an indication that the work was modified.
 Both are published on **`/credits`**, linked from the footer, along with the
-untouched source file itself — behind a click, because it is 21.6 MB. The facts
+untouched source file itself, behind a click, because it is 21.6 MB. The facts
 live in one place, `src/data/credits.ts`; the footer no longer carries an inline
 credit, so if that page or its link is removed the credit has to go back there.
 
@@ -258,7 +258,7 @@ credit, so if that page or its link is removed the credit has to go back there.
 decimation and why it is tiered; `src/scene/CarModel.tsx` documents why the
 triangle count is where it is.
 
-> `package.json` pins `overrides.sharp`. Do not remove it —
+> `package.json` pins `overrides.sharp`. Do not remove it:
 > `@gltf-transform/functions` pulls in `ndarray-pixels`, which declares its own
 > `sharp`. If the two resolve to different versions, npm nests a second copy,
 > two native libvips builds load into one process, and every texture encode dies
@@ -277,7 +277,7 @@ Nothing on this site is invented. Sources, so they can be re-verified:
 | Student pass photos | Supplied by the client, `public/Pics/` |
 | Phone, email, socials, tagline | freeflydriving.ca |
 
-Two supplied images — `jj result.jpg` and `sheet.jpg` — are photographs of
+Two supplied images (`jj result.jpg` and `sheet.jpg`) are photographs of
 completed ICBC road test result forms carrying candidate names and licence
 numbers. `scripts/prepare-photos.mjs` excludes them by name and
 `vite.config.ts` keeps the whole raw folder out of `dist/`. Do not publish them.

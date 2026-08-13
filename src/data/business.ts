@@ -1,7 +1,7 @@
 /**
  * Every business fact the site renders, in one place.
  *
- * Sourced from freeflydriving.ca and the brief. Nothing here is invented — if a
+ * Sourced from freeflydriving.ca and the brief. Nothing here is invented. If a
  * detail was not stated somewhere verifiable it is either absent or explicitly
  * marked as a placeholder (see `PLACEHOLDERS` at the bottom, which is what
  * drives the dev-only "needs real content" markers in the UI).
@@ -44,7 +44,7 @@ export const FOUNDED = 2022;
 /**
  * The instructor.
  *
- * Every clause below traces to something checkable — the founding year above,
+ * Every clause below traces to something checkable: the founding year above,
  * the Google rating, the licence classes the school sells, and the reviews in
  * reviews.ts. Nothing here claims a certification, a number of years behind the
  * wheel, a teaching qualification or a personal history, because none of those
@@ -75,7 +75,7 @@ export const SOCIALS = [
  *
  * ⚠ The source link is deliberately null. The live site points this claim at
  * https://vancouverdigitalweek.com/best-driving-schools-vancouver/, and that
- * entire domain now 301-redirects to raja700toto.com — an unrelated gambling
+ * entire domain now 301-redirects to raja700toto.com, an unrelated gambling
  * site. Whoever owned vancouverdigitalweek.com let it lapse and it has been
  * re-registered. Linking there from a driving school would hand a spam domain a
  * backlink and send real students to a casino page, so the badge renders as
@@ -98,7 +98,7 @@ export const TESLA_ADVANTAGES = [
     id: 'regen',
     index: '01',
     title: 'Regenerative braking',
-    body: 'Lifting off the accelerator slows the car noticeably harder than in a petrol automatic. It forces you to read the road further ahead and plan your stops instead of reacting with the brake pedal — which is the habit examiners are watching for.',
+    body: 'Lifting off the accelerator slows the car noticeably harder than in a petrol automatic. It forces you to read the road further ahead and plan your stops instead of reacting with the brake pedal, which is the habit examiners are watching for.',
     telemetry: 'One-pedal driving',
   },
   {
@@ -112,7 +112,7 @@ export const TESLA_ADVANTAGES = [
     id: 'autopilot',
     index: '03',
     title: 'Familiarity with assisted driving',
-    body: 'Assisted driving is standard on most new cars now. Knowing exactly what it does, what it does not do, and when to take over is part of being a competent modern driver — not an optional extra.',
+    body: 'Assisted driving is standard on most new cars now. Knowing exactly what it does, what it does not do, and when to take over is part of being a competent modern driver, not an optional extra.',
     telemetry: 'Hands on, eyes up',
   },
   {
@@ -141,8 +141,8 @@ export const JOURNEY = [
  * dummy section can never quietly ship.
  */
 export const PLACEHOLDERS = [
-  'Instructor credentials — Harry\'s photo and bio are in. Certifications, licence-instructor number and years of experience are still not supplied, so none are claimed.',
-  'Reviews — 3 of 153 are quoted. Two are excerpts (Google truncated them) and are marked as such in the UI. Worth pasting the full text of both into src/data/reviews.ts.',
-  'Award backlink — the "top 3" source domain (vancouverdigitalweek.com) 301-redirects to an unrelated site, so the badge renders unlinked. Client is checking; leave as-is meanwhile.',
-  'Fleet — 11 of the supplied photos show the school\'s older Hyundai Sonata rather than the Tesla. They are processed but not displayed, since the site\'s proposition is learning in a Model 3.',
+  'Instructor credentials: Harry\'s photo and bio are in. Certifications, licence-instructor number and years of experience are still not supplied, so none are claimed.',
+  'Reviews: 3 of 153 are quoted. Two are excerpts (Google truncated them) and are marked as such in the UI. Worth pasting the full text of both into src/data/reviews.ts.',
+  'Award backlink: the "top 3" source domain (vancouverdigitalweek.com) 301-redirects to an unrelated site, so the badge renders unlinked. Client is checking; leave as-is meanwhile.',
+  'Fleet: 11 of the supplied photos show the school\'s older Hyundai Sonata rather than the Tesla. They are processed but not displayed, since the site\'s proposition is learning in a Model 3.',
 ] as const;

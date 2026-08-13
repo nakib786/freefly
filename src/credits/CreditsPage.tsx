@@ -1,5 +1,5 @@
 /**
- * /credits — attribution, licences, and the raw car behind a consent gate.
+ * /credits: attribution, licences, and the raw car behind a consent gate.
  *
  * Its own document rather than a route on the homepage, for two reasons: the
  * homepage has no router, and more importantly this page's whole argument is
@@ -101,7 +101,7 @@ export function CreditsPage() {
             <p className="type-condensed mt-8 max-w-[52ch] text-xl text-cream-dim md:text-2xl">
               The car in the background is somebody else&rsquo;s work, used under a licence that
               asks for credit. So are the typefaces and most of the code. This is the list, and the
-              original car is at the bottom of it — if you ask for it.
+              original car is at the bottom of it, if you ask for it.
             </p>
           </div>
         </div>

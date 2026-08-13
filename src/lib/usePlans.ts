@@ -5,7 +5,7 @@
  * dashboard should reach the site without anyone triggering a redeploy, and
  * the fallback means there is no loading-shaped hole if the call is slow or the
  * key is not configured yet. The first paint shows real (if possibly stale)
- * prices immediately, then swaps in live data if it differs — on mount, and
+ * prices immediately, then swaps in live data if it differs: on mount, and
  * again when the tab is re-focused after REFOCUS_REFRESH_MS.
  */
 import { useEffect, useRef, useState } from 'react';

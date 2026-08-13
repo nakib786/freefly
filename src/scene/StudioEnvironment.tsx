@@ -2,13 +2,13 @@
  * Lighting rig for the car.
  *
  * Built from Lightformers rather than a drei `preset`, because the presets pull
- * HDRIs from a CDN at runtime — an external request the deploy has no control
+ * HDRIs from a CDN at runtime, an external request the deploy has no control
  * over, and a blocking one at that. Everything here is generated in-process.
  *
  * The shape of the rig is the standard automotive one: two long, narrow strip
  * lights running the length of the car just above the beltline. Those are what
  * produce the continuous highlight streak down the flank that reads as "car
- * photography" — a point light or a plain ambient never does. The green kicker
+ * photography"; a point light or a plain ambient never does. The green kicker
  * on the near side ties the render to the site's aurora accent so the 3D layer
  * and the HTML layer look like the same design, not a widget dropped into a page.
  */
@@ -24,7 +24,7 @@ export function StudioEnvironment({ simplified = false }: Props) {
   return (
     <>
       {/* 256 on both paths. The body is clearcoat over metalness 0.55 at
-          roughness 0.28 — near enough a mirror that the environment cube *is*
+          roughness 0.28, near enough a mirror that the environment cube *is*
           the paint, and at 128 the strip lights resolve as a handful of soft
           blobs smeared across the hood. That is the "watercolour" bonnet on
           mobile: not a material or a mesh problem, a reflection sampled from
@@ -52,7 +52,7 @@ export function StudioEnvironment({ simplified = false }: Props) {
         />
 
         {/* Front fill. The camera spends most of the sequence ahead of the car,
-            and without this the nose and bumper fall into shadow — which is
+            and without this the nose and bumper fall into shadow, which is
             what made the hero read as a charcoal car rather than a white one. */}
         <Lightformer
           form="rect"
@@ -62,7 +62,7 @@ export function StudioEnvironment({ simplified = false }: Props) {
           position={[-1.5, 2.6, -9]}
         />
 
-        {/* The flank streaks. Long, thin, and close — this is the whole trick. */}
+        {/* The flank streaks. Long, thin, and close. This is the whole trick. */}
         <Lightformer
           form="rect"
           intensity={3.4}
@@ -80,7 +80,7 @@ export function StudioEnvironment({ simplified = false }: Props) {
           rotation={[0, Math.PI / 2, 0]}
         />
 
-        {/* Aurora kicker — the site's accent catching the rear haunch only. Kept
+        {/* Aurora kicker: the site's accent catching the rear haunch only. Kept
             deliberately weak and short: at full strength it washes the entire
             flank green and the car stops reading as white. */}
         <Lightformer

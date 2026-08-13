@@ -1,5 +1,5 @@
 /**
- * POST /api/contact — the site's enquiry form endpoint.
+ * POST /api/contact: the site's enquiry form endpoint.
  *
  * Thin proxy onto the freefly-mailer Worker over a service binding. All the
  * validation, rate limiting and mail composition live there; this exists so the
@@ -39,7 +39,7 @@ export const onRequestPost = async (context: PagesContext): Promise<Response> =>
   } catch (error) {
     console.error('mailer unreachable', error);
     return new Response(
-      JSON.stringify({ error: 'send_failed', message: 'Could not send just now — please call us.' }),
+      JSON.stringify({ error: 'send_failed', message: 'Could not send just now. Please call us.' }),
       { status: 502, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } },
     );
   }

@@ -8,7 +8,7 @@
  *
  *   anchor    id of the section this beat belongs to. When present, the beat's
  *             real timing is MEASURED from that element's position on the page
- *             (see timing.ts) — so adding copy or renaming a plan retimes the
+ *             (see timing.ts), so adding copy or renaming a plan retimes the
  *             sequence automatically instead of silently desynchronising the
  *             camera from what the reader is looking at.
  *   at        fallback timing, 0 (page top) to 1 (page bottom), used only if
@@ -36,7 +36,7 @@
  *
  * The car staying put is deliberate. Moving it through the world over a long
  * page accumulates float error, drags the lighting rig and shadow frustum along
- * with it, and couples drive distance to copy length — add a section and the
+ * with it, and couples drive distance to copy length: add a section and the
  * whole path needs retiming. Instead the *road* scrolls beneath it, the wheels
  * spin, and the body pitches. Visually identical, far less to fight.
  */
@@ -51,7 +51,7 @@ export type CameraFraming = {
 };
 
 export type CarState = {
-  /** Ground speed, m/s. Drives wheel spin and road scroll — nothing else. */
+  /** Ground speed, m/s. Drives wheel spin and road scroll, nothing else. */
   speed: number;
   /** Body pitch, degrees. Negative = nose down (braking), positive = squat. */
   pitch: number;
@@ -117,14 +117,14 @@ export const KEYFRAMES: readonly Keyframe[] = [
     label: 'Cruise',
     anchor: 'lessons',
     at: 0.55,
-    // Side-on tracking shot at door height — the plans section runs alongside.
+    // Side-on tracking shot at door height; the plans section runs alongside.
     camera: {
       position: [-8.6, 1.18, 0.55],
       lookAt: [0, 0.82, 0],
       fov: 36,
       // Plans is the densest section, so the car drops to a band along the
       // bottom rather than competing with the pricing grid. 0.78 did not
-      // actually get it there — at this distance and fov one metre of pan is
+      // actually get it there: at this distance and fov one metre of pan is
       // only ~18% of the frame, so it left the car sitting across the middle of
       // the pricing columns. 1.9 is what puts its roof line under them.
       pan: [0, 1.9],
@@ -144,7 +144,7 @@ export const KEYFRAMES: readonly Keyframe[] = [
       fov: 31,
       // Instructors has no free side: the portrait takes the left, the bio and
       // review evidence take the right. So the car goes under both rather than
-      // beside either — the sideways offset is kept only so its nose is not
+      // beside either; the sideways offset is kept only so its nose is not
       // centred directly beneath the bio paragraphs.
       pan: [-1.2, 1.15],
     },

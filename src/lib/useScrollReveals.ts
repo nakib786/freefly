@@ -2,7 +2,7 @@
  * Section-entry reveals for anything marked `data-reveal`.
  *
  * Uses IntersectionObserver rather than GSAP ScrollTrigger, deliberately.
- * ScrollTrigger drives the camera (that is the job it is genuinely needed for —
+ * ScrollTrigger drives the camera (that is the job it is genuinely needed for:
  * scrubbing a timeline against scroll position), but for "has this entered the
  * viewport yet" it was the wrong tool here on three counts:
  *
@@ -79,7 +79,7 @@ export function useScrollReveals(enabled = true) {
 
     scan();
 
-    // Catches anything React renders after mount — most importantly the plans
+    // Catches anything React renders after mount, most importantly the plans
     // section re-rendering once live pricing arrives.
     const mutations = new MutationObserver(scan);
     mutations.observe(document.body, { childList: true, subtree: true });

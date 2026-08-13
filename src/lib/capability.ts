@@ -4,7 +4,7 @@
  * Three tiers, decided once on mount:
  *
  *   'full'   scroll-scrubbed camera, high LOD, shadows
- *   'lite'   3D but simplified — low LOD, no shadows, fewer lights, and on
+ *   'lite'   3D but simplified: low LOD, no shadows, fewer lights, and on
  *            mobile a shorter camera path
  *   'none'   no WebGL at all; the page renders a static hero image
  *
@@ -61,7 +61,7 @@ function detectWebGL(): { ok: boolean; softwareRenderer: boolean } {
 const TIERS: readonly Tier[] = ['full', 'lite', 'none'];
 
 /**
- * `?scene=full|lite|none` forces a tier. For QA only — it is the only way to
+ * `?scene=full|lite|none` forces a tier. For QA only; it is the only way to
  * exercise the 3D path in a headless/software-rendered browser, which the
  * detection below (correctly) refuses to give real 3D to.
  */
@@ -72,8 +72,8 @@ function forcedTier(): Tier | null {
 }
 
 /**
- * Memoised because there are now two callers — the boot screen, to know which
- * model file to fetch, and SceneLayer, to know what to render — and the probe
+ * Memoised because there are now two callers (the boot screen, to know which
+ * model file to fetch, and SceneLayer, to know what to render), and the probe
  * is not free: it creates a real WebGL2 context to test it. The answer cannot
  * change within a page load (the `?scene=` override and the media queries it
  * reads are all fixed at that point), so computing it twice would only mean a
@@ -138,7 +138,7 @@ function computeCapability(): Capability {
       staticCamera: reducedMotion,
       modelUrl: LOW_LOD,
       shadows: false,
-      // 2, not 1.5. Phones are where pixel ratios are highest — a 3x screen
+      // 2, not 1.5. Phones are where pixel ratios are highest: a 3x screen
       // rendering at 1.5 is a quarter of the samples, then bilinearly stretched
       // over the real pixels, and a car is mostly thin high-contrast edges that
       // do not survive that. The budget for it comes from the low-power path no
@@ -152,7 +152,7 @@ function computeCapability(): Capability {
   return {
     tier: 'full',
     reducedMotion,
-    // Reduced motion keeps the 3D — it just stops the scroll-scrubbing, which
+    // Reduced motion keeps the 3D. It just stops the scroll-scrubbing, which
     // is what the preference is actually about.
     staticCamera: reducedMotion,
     modelUrl: HIGH_LOD,

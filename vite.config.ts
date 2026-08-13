@@ -70,8 +70,8 @@ function cleanUrls(): Plugin {
     apply: 'serve',
     configureServer(server) {
       server.middlewares.use((req, _res, next) => {
-        // Split the query off first, or ?scene=full — the QA flag the whole
-        // 3D path is exercised with — misses the match and falls through to a 404.
+        // Split the query off first, or ?scene=full (the QA flag the whole
+        // 3D path is exercised with) misses the match and falls through to a 404.
         const [path, query] = (req.url ?? '').split('?');
         if (path === '/credits' || path === '/credits/') {
           req.url = `/credits.html${query ? `?${query}` : ''}`;
@@ -115,7 +115,7 @@ function captureSink(): Plugin {
  * `public/Pics/` holds the ~40 MB of original phone JPEGs the client supplied.
  * Vite copies publicDir wholesale, so without this every deploy would ship the
  * originals alongside the 3.3 MB of optimised WebP that `npm run photos`
- * generates into `public/photos/` — and would publish two road-test result
+ * generates into `public/photos/`, and would publish two road-test result
  * forms containing personal data that prepare-photos.mjs deliberately excludes.
  *
  * Removing it from `dist/` after the copy leaves the source files untouched.
@@ -147,7 +147,7 @@ export default defineConfig({
   server: {
     /**
      * `vite dev` does not run Pages Functions, so /api/plans used to 404 here and
-     * the pricing section silently showed its bundled fallback — indistinguishable
+     * the pricing section silently showed its bundled fallback, indistinguishable
      * from the live read being broken, and unfixable by any amount of .env editing
      * (that file is read by the Function, never by Vite).
      *
@@ -165,7 +165,7 @@ export default defineConfig({
   build: {
     target: 'es2022',
     // Two documents, named explicitly. model-check.html and static-hero.html are
-    // dev harnesses and are left out on purpose — naming any input at all means
+    // dev harnesses and are left out on purpose; naming any input at all means
     // index.html has to be listed too, so this is the whole production surface.
     rollupOptions: {
       input: {
@@ -176,7 +176,7 @@ export default defineConfig({
     // No manualChunks here, deliberately. Naming three/r3f/gsap as manual
     // chunks made them siblings of the entry rather than children of the
     // dynamic import, and Vite then emitted <link rel="modulepreload"> for
-    // them in index.html — which downloads ~1.2 MB of 3D engine on first load
+    // them in index.html, which downloads ~1.2 MB of 3D engine on first load
     // for every visitor, including the ones the capability check is about to
     // send down the static-image path. Letting Rollup split them naturally
     // keeps them inside the lazily-imported DriveScene graph, where they are

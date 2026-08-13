@@ -2,7 +2,7 @@
  * The 3D layer: a fixed, full-viewport canvas that the document scrolls over.
  *
  * Everything here is lazy-loaded (see SceneLayer.tsx) so three.js never blocks
- * first paint. The canvas itself is `position: fixed` and pointer-events: none —
+ * first paint. The canvas itself is `position: fixed` and pointer-events: none;
  * it is scenery, not a control surface, and it must never eat a scroll gesture
  * or a tap on a link above it.
  */
@@ -78,7 +78,7 @@ function CarRig({
 
     if (wheels.current) {
       // Negative: rotating a wheel positively about +X carries its top toward
-      // +Z, and a rolling wheel's top travels the way the car does — so forward
+      // +Z, and a rolling wheel's top travels the way the car does, so forward
       // (−Z, per keyframes.ts) is a negative spin.
       spin.current -= (drive.speed / radius.current) * dt;
       const steer = THREE.MathUtils.degToRad(drive.steer);
@@ -122,7 +122,7 @@ export default function DriveScene({ capability }: Props) {
       gl={{
         // MSAA on both tiers. Turning it off was the wrong economy on a phone:
         // mobile GPUs are tile-based, so multisampling happens inside tile
-        // memory and resolves on write-out — it does not multiply bandwidth the
+        // memory and resolves on write-out; it does not multiply bandwidth the
         // way it does on a desktop immediate-mode GPU. What it buys is the
         // whole silhouette of a white car against a near-black page, plus every
         // panel-gap and pillar edge, holding still instead of crawling as the

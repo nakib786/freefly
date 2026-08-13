@@ -127,7 +127,7 @@ export function Testimonials() {
         </h2>
 
         {/* The aggregate, set as an instrument readout. This is the single
-            strongest trust signal the business has — 5.0 across 153 reviews. */}
+            strongest trust signal the business has: 5.0 across 153 reviews. */}
         <a
           href={REVIEW_SUMMARY.url}
           target="_blank"

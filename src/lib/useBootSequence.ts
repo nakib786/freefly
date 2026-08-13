@@ -5,13 +5,13 @@
  * to work that has actually happened. No timers pretending to be bandwidth, no
  * easing curve standing in for a download. Each job below either reports real
  * bytes off the wire (via a streamed fetch, reading `content-length`) or is a
- * genuine binary event we wait on — fonts resolved, first frame of the car
+ * genuine binary event we wait on: fonts resolved, first frame of the car
  * drawn. The percentage is those jobs weighted by their real byte cost, so the
  * bar moves in proportion to the work left rather than in equal steps.
  *
  * ─── Why preload at all ────────────────────────────────────────────────────
- * Not for the ceremony. The page's heavy assets — a 1.5 MB Draco GLB, three
- * variable fonts, a 110 KB portrait — otherwise land while the visitor is
+ * Not for the ceremony. The page's heavy assets (a 1.5 MB Draco GLB, three
+ * variable fonts, a 110 KB portrait) otherwise land while the visitor is
  * already scrolling, and the scroll-scrubbed camera competes with a Draco
  * decode on the same thread. Pulling that forward into a gate trades a few
  * seconds of honest waiting for a page that does not stutter once it is up.
@@ -20,7 +20,7 @@
  * A gate is a liability: if it hangs, the business loses the call. So there is
  * a hard deadline after which the gate opens regardless, a failed job counts as
  * satisfied rather than blocking, a Skip control is present from the first
- * frame, and the phone number lives on the boot screen itself — a visitor on a
+ * frame, and the phone number lives on the boot screen itself, so a visitor on a
  * bad connection can act without waiting for any of this to finish.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -38,7 +38,7 @@ export type BootJob = {
   id: string;
   label: string;
   /**
-   * Relative cost used to weight the overall percentage — bytes, so the bar
+   * Relative cost used to weight the overall percentage: bytes, so the bar
    * tracks the work rather than the step count. For the two jobs that are not
    * downloads (fonts, first frame) this is a considered estimate of what they
    * cost in practice, which is the honest way to size a step whose progress is
@@ -150,7 +150,7 @@ function planJobs(capability: Capability): BootJob[] {
   const plan = [job('fonts', 'Signage & type', 160_000)];
 
   if (capability.tier === 'none') {
-    // No WebGL here, so there is no GLB to wait on — waiting on one would hang
+    // No WebGL here, so there is no GLB to wait on; waiting on one would hang
     // the gate on a file this device is never going to ask for.
     plan.push(job('hero', 'Cover photo', 34_000));
   } else {
@@ -190,7 +190,7 @@ export function useBootSequence(): BootSequence {
 
     // Everything below is scoped to this run of the effect, not to the
     // component. React's StrictMode mounts, tears down and remounts in dev, and
-    // the first run's aborted promises keep resolving after its cleanup — so a
+    // the first run's aborted promises keep resolving after its cleanup, so a
     // job array or an animation-frame handle held on a ref would be shared with
     // the run that replaced it. That is not a dev-only nuisance: it had the
     // dead run marking the live run's jobs complete, which opened the gate
@@ -262,7 +262,7 @@ export function useBootSequence(): BootSequence {
     // Note what this deliberately does NOT do: release the scene. The visitor
     // has waited long enough and gets the page, but the model is still in
     // flight, and mounting the 3D layer now would have GLTFLoader request the
-    // same 1.5 MB our preloader is already halfway through — doubling the
+    // same 1.5 MB our preloader is already halfway through, doubling the
     // traffic on precisely the connection that was too slow in the first place.
     // The preload keeps its single ownership of the file and the car appears
     // when it lands, a few seconds into a page that is already fully usable.
@@ -272,8 +272,8 @@ export function useBootSequence(): BootSequence {
       setDone(true);
     }, DEADLINE_MS);
 
-    // The Draco decoder is on the critical path — the GLB cannot be parsed
-    // without it — but it is fetched lazily by GLTFLoader, which means it would
+    // The Draco decoder is on the critical path (the GLB cannot be parsed
+    // without it), but it is fetched lazily by GLTFLoader, which means it would
     // otherwise start only once everything else has finished. Warmed here, and
     // deliberately untracked: it is 250 KB against the model's 1.5 MB, and
     // giving it its own row would be noise rather than information.

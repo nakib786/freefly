@@ -28,7 +28,7 @@
   ],
 
   // `period` only accepts 10 or 60 seconds, so this is burst protection rather
-  // than a daily quota — 2/min per enquirer IP. Combined with the honeypot and
+  // than a daily quota: 2/min per enquirer IP. Combined with the honeypot and
   // the pinned destination above, the worst case is volume, not misdirection.
   "ratelimits": [
     {
@@ -41,7 +41,7 @@
   "vars": {
     // Sender lives on aurorabusiness.ca because that zone is on this Cloudflare
     // account with Email Routing enabled. freeflydriving.ca runs on Wix
-    // nameservers, so it cannot send here — Reply-To carries the enquirer's own
+    // nameservers, so it cannot send here. Reply-To carries the enquirer's own
     // address, so replying from the inbox still reaches the student directly.
     "MAIL_FROM": "freefly-enquiries@aurorabusiness.ca",
     "MAIL_FROM_NAME": "Free Fly Driving School"

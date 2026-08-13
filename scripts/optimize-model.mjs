@@ -7,19 +7,19 @@
  * Source: assets/models/tesla-model-3-ameer.glb
  *   "Tesla 2018 Model 3" by Ameer Studio (Sketchfab, CC-BY 4.0)
  *   684,315 tris / 394,055 verts / 176 meshes / 58 materials / 22 PNG textures.
- *   The 22.6 MB is almost entirely raw f32 geometry — textures are only ~2 MB.
+ *   The 22.6 MB is almost entirely raw f32 geometry; textures are only ~2 MB.
  *
  * Why tiered rather than one global ratio: the triangle budget in this model is
  * badly distributed for our use case. Seats, carpet, steering wheel and door
  * leather account for ~35% of all triangles and are seen only through tinted
- * glass, while the body panels and wheels — which the hero camera pushes right
- * up against — are what actually has to hold up. A uniform 0.06 ratio (the
+ * glass, while the body panels and wheels (which the hero camera pushes right
+ * up against) are what actually has to hold up. A uniform 0.06 ratio (the
  * naive way to hit 40k) visibly facets the hood and wheel arches while wasting
  * triangles on seat stitching nobody will ever see. So each primitive is
  * assigned a tier by material, and each tier gets its own ratio + error bound.
  *
  * meshoptimizer stops early if the error bound is hit, so the ratios below are
- * targets, not guarantees — curved exterior panels keep more than their ratio
+ * targets, not guarantees: curved exterior panels keep more than their ratio
  * asks for, which is the intent.
  *
  * ─── Why the shell is not decimated at all ──────────────────────────────────
@@ -28,12 +28,12 @@
  * wrong. Rendering the same view from the shipped GLB and from a build with the
  * shell spared (.captures/ab1-high.png vs ab1-trial.png) shows the boot lid,
  * rear quarter and A-pillar visibly crumpled, the panel-gap lines torn, and a
- * sawtooth along the rear window frame — while the silhouette is unchanged.
+ * sawtooth along the rear window frame, while the silhouette is unchanged.
  *
  * That last part is the tell. meshoptimizer's simplifier minimises *positional*
  * error only; it has no view of the normals riding on those vertices. A tight
- * `error` bound therefore does exactly what it promises — the surface stays
- * where it was — while the normal field over it gets resampled onto a coarser
+ * `error` bound therefore does exactly what it promises (the surface stays
+ * where it was) while the normal field over it gets resampled onto a coarser
  * set of vertices and interpolated across larger triangles. On a matte material
  * that is invisible. On clearcoat paint, which is close to a mirror, it reads
  * as dents. No error bound fixes this, because the metric being bounded is not
@@ -95,7 +95,7 @@ const TIER_BY_MATERIAL = {
   revlight: 'shell',
   platnomor: 'shell',
 
-  // Wheels — hero scene parks the camera on the front-left arch.
+  // Wheels: hero scene parks the camera on the front-left arch.
   wheels: 'wheels',
   hub_: 'wheels',
 
@@ -113,7 +113,7 @@ const TIER_BY_MATERIAL = {
   'light night': 'cabin',
   light_night: 'cabin',
 
-  // Underbody / suspension — never above the horizon line in any scene.
+  // Underbody / suspension: never above the horizon line in any scene.
   chassis: 'hidden',
   suspensi: 'hidden',
 };
@@ -142,21 +142,21 @@ const LODS = {
     file: 'tesla-model-3-low.glb',
     texture: 512,
     tiers: {
-      // Mobile is where the damage was worst — the phone scenes hold the car
+      // Mobile is where the damage was worst: the phone scenes hold the car
       // at mid distance across a whole section, so a crumpled flank is on
       // screen far longer than it ever is on desktop. The shell is spared here
       // too; the mobile LOD earns its size back on textures and interior.
       shell: { ratio: 1 },
       // NOT cut, at either LOD. The earlier 0.45 here is what turned the tyres
       // white on mobile. `wheels.6` is a 37k-triangle primitive whose base
-      // colour map is an atlas — white rim face on black rubber — so the tyre
+      // colour map is an atlas (white rim face on black rubber), so the tyre
       // reads black only for as long as its UVs keep pointing at the black half
       // of that atlas. Simplification welds by position and remaps the other
       // attributes onto the survivors, which drags UVs (and the roughness they
       // sample) across the rim/rubber seam: the tread picks up rim texels and a
       // near-mirror roughness, and then reflects the overhead softbox. That is
       // the white tyre. It is invisible on desktop purely because this tier was
-      // already spared there. lockBorder does not help — the seam is interior.
+      // already spared there. lockBorder does not help; the seam is interior.
       wheels: { ratio: 1 },
       trim: { ratio: 0.08, error: 0.01 },
       cabin: { ratio: 0.04, error: 0.04 },
@@ -165,7 +165,7 @@ const LODS = {
   },
 };
 
-/** Primitives below this never get simplified — badges, handles, small trim. */
+/** Primitives below this never get simplified: badges, handles, small trim. */
 const MIN_TRIANGLES = 128;
 
 /* ------------------------------------------------------------------ utils -- */
@@ -223,7 +223,7 @@ async function build(lodName) {
   const root = doc.getRoot();
   const before = docTris(root);
 
-  // Weld first — meshoptimizer collapses far better on a welded, indexed mesh,
+  // Weld first: meshoptimizer collapses far better on a welded, indexed mesh,
   // and Sketchfab's FBX export leaves a lot of split vertices behind.
   await doc.transform(dedup(), weld());
   const welded = docTris(root);

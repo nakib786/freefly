@@ -17,7 +17,7 @@
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-# Not fingerprinted, but versioned by hand — bump the filename if the model
+# Not fingerprinted, but versioned by hand, so bump the filename if the model
 # changes. Long cache is the whole reason the 1.35 MB GLB is acceptable.
 /models/*
   Cache-Control: public, max-age=31536000, immutable

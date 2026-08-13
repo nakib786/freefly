@@ -1,6 +1,6 @@
 /**
  * Dev-only harness for eyeballing the decimated GLB. Not part of the production
- * build — `model-check.html` is deliberately left out of rollup's inputs.
+ * build; `model-check.html` is deliberately left out of rollup's inputs.
  *
  * Run `npm run dev` and open /model-check.html. Compare source vs. high vs. low
  * at the angles the real camera path actually uses.
@@ -73,7 +73,7 @@ function Readout({ src }: { src: string }) {
 
 /**
  * Exposes the harness controls on `window` so captures can be driven from a
- * headless context — the browser pane here can't composite frames for a normal
+ * headless context, because the browser pane here can't composite frames for a normal
  * screenshot, so renders are pulled out of the drawing buffer instead.
  */
 function CaptureBridge(controls: {
@@ -138,7 +138,7 @@ function App() {
   /**
    * Publishes the resolved wheel rig on `window.__wheels`, in world metres.
    * The rig is derived from mesh bounds rather than authored pivots (the GLB has
-   * none — see CarModel), so "did it find four wheels, and are they at the four
+   * none; see CarModel), so "did it find four wheels, and are they at the four
    * corners" is worth being able to check directly instead of inferring it from
    * a still frame, where a mis-placed pivot only shows up once it rotates.
    */

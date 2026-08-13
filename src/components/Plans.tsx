@@ -1,19 +1,19 @@
 /**
- * Lessons & pricing — the five live Wix plans.
+ * Lessons & pricing: the five live Wix plans.
  *
  * Three deliberate departures from the default pricing section:
  *
  * 1. No photography. All five plans in Wix share one placeholder stock image,
  *    so the section differentiates tiers structurally instead.
  * 2. No three equal columns with a glowing middle. The three package tiers are
- *    sized in proportion to the instruction hours they contain — the Beginners
+ *    sized in proportion to the instruction hours they contain. The Beginners
  *    column really is wider because it really is 30 hours against Advanced's 9.
  *    The layout *is* the data, so no tier needs a "Most popular" sticker.
  * 3. The motif is a charge meter. Each plan draws its lesson count as a row of
  *    segments, which reads as an EV state-of-charge gauge and gives an instant
  *    visual sense of scale between a 1-lesson top-up and a 20-lesson course.
  *
- * Prices come from /api/plans (live Wix) with the bundled plans as fallback —
+ * Prices come from /api/plans (live Wix) with the bundled plans as fallback;
  * see usePlans.ts.
  */
 import { Scrim, Section } from '@/components/primitives';
@@ -110,7 +110,7 @@ function PackageColumn({ plan, maxHours }: { plan: Plan; maxHours: number }) {
         <PerkList perks={plan.perks} />
         <div>
           <Price plan={plan} className="text-4xl md:text-5xl" />
-          {/* Shown because it is a condition on the price directly above it —
+          {/* Shown because it is a condition on the price directly above it:
               all three package tiers are "paid in advance" prices. */}
           {plan.terms && <p className="mt-3 max-w-[30ch] text-xs text-cream-dim">{plan.terms}</p>}
           <a
@@ -131,7 +131,7 @@ function Capstone({ plan }: { plan: Plan }) {
       className="reveal relative mt-16 overflow-hidden border border-azure/40 md:mt-24"
       data-reveal
     >
-      {/* Chequered flag, drawn rather than imported — two rows of squares is
+      {/* Chequered flag, drawn rather than imported. Two rows of squares is
           not worth an icon dependency, and this way it inherits the palette. */}
       <div
         aria-hidden
@@ -211,7 +211,7 @@ export function Plans() {
 
       {import.meta.env.DEV && (
         <p className="type-telemetry mt-10 text-cream-faint">
-          pricing source: {unconfigured ? 'fallback — /api/plans has no Wix credentials' : live ? 'live Wix' : 'bundled fallback'}
+          pricing source: {unconfigured ? 'fallback (/api/plans has no Wix credentials)' : live ? 'live Wix' : 'bundled fallback'}
         </p>
       )}
     </Section>

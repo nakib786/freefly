@@ -9,7 +9,7 @@
  * "Raw" is meant literally. CarModel.tsx re-authors the paint, glass and
  * emissive slots before the car reaches the homepage, and per the note there,
  * some source materials (`primary.004`, `indicator_lr`) export with wrong
- * factors — so untreated panels may come through discoloured at some angles.
+ * factors, so untreated panels may come through discoloured at some angles.
  * That is not a bug to fix here: this is the asset as Ameer Studio published
  * it, and the treated one is on the site. The only thing done to it below is
  * the import-scale normalisation, without which the car is ~525 units long and
@@ -77,7 +77,7 @@ function RawCar({ onLoaded }: { onLoaded: (s: Stats) => void }) {
 
 /**
  * Download readout. drei's progress store is global and updates on every
- * onProgress tick, so this sits outside the Canvas as ordinary DOM — a
+ * onProgress tick, so this sits outside the Canvas as ordinary DOM. A
  * percentage rendered by WebGL that has not started yet would be a nonsense.
  */
 function TransferReadout() {
@@ -134,7 +134,7 @@ export default function RawModelViewer({ reducedMotion }: { reducedMotion: boole
           enablePan={false}
           minDistance={3}
           maxDistance={14}
-          // Never let the camera go under the floor — there is no underside
+          // Never let the camera go under the floor: there is no underside
           // worth seeing and it makes the car look like it is flying.
           maxPolarAngle={Math.PI / 2.08}
           autoRotate={!reducedMotion}

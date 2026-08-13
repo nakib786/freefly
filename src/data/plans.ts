@@ -5,11 +5,11 @@
  * eb31b268-571e-4711-a79e-b3aabdb44f2f, read through /api/plans (a Cloudflare
  * Pages Function, so the API key never reaches the browser). The data below is
  * the fallback the page renders if that call fails or has not been configured
- * yet — it mirrors the five plans that are live in Wix today.
+ * yet. It mirrors the five plans that are live in Wix today.
  *
  * Deliberately no plan imagery: all five plans in Wix share one placeholder
  * stock photo (image id e6f1d6_3c26a3066071457a80d225115e6034b4~mv2.jpg), so
- * the section differentiates tiers through structure instead — see PlanMeter,
+ * the section differentiates tiers through structure instead; see PlanMeter,
  * which draws each plan's session count as a charge-meter of segments.
  */
 
@@ -33,14 +33,14 @@ export type Plan = {
 };
 
 /**
- * Ordering and tiering are ours, not Wix's — Wix has no concept of a capstone
+ * Ordering and tiering are ours, not Wix's. Wix has no concept of a capstone
  * plan. Matching is by name (see `mergeWithFallback`), so if the client renames
  * a plan in the dashboard it still renders, just without the tier styling.
  */
 /**
  * Copied verbatim from the live Wix plans (read 2026-08-11), so the fallback is
  * a true snapshot rather than a paraphrase. Descriptions and perks are exactly
- * as the client wrote them — including the parenthesised city prices, which
+ * as the client wrote them, including the parenthesised city prices, which
  * are the client's own wording for a surcharge, not a typo to be tidied up.
  */
 export const FALLBACK_PLANS: readonly Plan[] = [
@@ -139,7 +139,7 @@ function guessHours(plan: LivePlan): number {
  * together by name so live price changes flow through while the layout keeps
  * the structure it needs.
  *
- * A plan added in Wix that we have no fallback entry for still renders — it
+ * A plan added in Wix that we have no fallback entry for still renders; it
  * just lands in the `package` tier with its meter derived from its own perks.
  */
 export function mergeWithFallback(live: readonly LivePlan[]): readonly Plan[] {

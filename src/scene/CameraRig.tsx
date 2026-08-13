@@ -1,7 +1,7 @@
 /**
  * Turns scroll progress into a camera position, orientation and car state.
  *
- * Reads nothing but KEYFRAMES — every angle, timing and framing decision lives
+ * Reads nothing but KEYFRAMES: every angle, timing and framing decision lives
  * in keyframes.ts. See that file's header for how to tune the sequence.
  *
  * Positions and look-at targets are sampled from Catmull-Rom splines through
@@ -24,7 +24,7 @@ import {
 } from '@/scene/keyframes';
 import { timings } from '@/scene/timing';
 
-/** Reusable scratch objects — allocating inside useFrame would churn the GC. */
+/** Reusable scratch objects; allocating inside useFrame would churn the GC. */
 const scratch = {
   position: new THREE.Vector3(),
   lookAt: new THREE.Vector3(),
@@ -138,7 +138,7 @@ export function CameraRig({ staticCamera = false, onSample }: Props) {
 
 /**
  * Which keyframe segment `p` falls in, and how far through it. Reads the
- * measured timings rather than the authored `at` values — see timing.ts.
+ * measured timings rather than the authored `at` values; see timing.ts.
  */
 function locate(p: number) {
   for (let i = KEYFRAMES.length - 2; i >= 0; i--) {
@@ -151,7 +151,7 @@ function locate(p: number) {
   return { index: 0, local: 0 };
 }
 
-/** Ken Perlin's smootherstep — zero 1st and 2nd derivative at both ends. */
+/** Ken Perlin's smootherstep: zero 1st and 2nd derivative at both ends. */
 function smootherstep(t: number) {
   const x = THREE.MathUtils.clamp(t, 0, 1);
   return x * x * x * (x * (x * 6 - 15) + 10);

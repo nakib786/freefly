@@ -4,13 +4,13 @@
  * Since the car stays at the origin (see keyframes.ts), motion has to come from
  * somewhere else: this plane's texture scrolls along Z at the car's speed, the
  * wheels spin to match, and between them the car reads as driving. Scrolling a
- * texture is also the cheapest possible way to do it — one uniform update per
+ * texture is also the cheapest possible way to do it: one uniform update per
  * frame, no geometry churn.
  *
  * The texture is drawn to a canvas at runtime rather than shipped as an image:
  * it is a few hundred lines of noise and two dashed lines, so a file would cost
  * a request and a download to deliver something generated in under a
- * millisecond — and it can be tuned in code rather than in an image editor.
+ * millisecond, and it can be tuned in code rather than in an image editor.
  */
 import { useFrame } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
@@ -53,7 +53,7 @@ function createRoadTexture(simplified: boolean) {
   }
 
   // Two dashed lane lines, one either side of the car. Drawn dimmer than real
-  // road paint — at full white they strobe distractingly once scrolling.
+  // road paint; at full white they strobe distractingly once scrolling.
   const drawDashes = (u: number) => {
     const x = u * size;
     ctx.fillStyle = 'rgba(236, 232, 225, 0.42)';
@@ -91,7 +91,7 @@ export function Road({ speedRef, simplified = false }: Props) {
     // Sign chain, because it inverts twice and guessing it gets you a car that
     // cruises backwards: the plane is rotated −90° about X, which maps texture
     // +V onto world −Z. Raising `offset.y` samples from higher V, so the pattern
-    // appears to travel toward −V — that is world +Z. Increasing offset is
+    // appears to travel toward −V, which is world +Z. Increasing offset is
     // therefore forward, and the negation that used to be here was the bug.
     texture.offset.y = offset.current * texture.repeat.y;
   });

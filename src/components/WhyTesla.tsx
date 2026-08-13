@@ -27,7 +27,7 @@ export function WhyTesla() {
         </h2>
 
         <p className="reveal type-condensed mt-8 max-w-[46ch] text-xl text-cream-dim" data-reveal>
-          An EV changes what a learner has to think about — and most of those changes make you a
+          An EV changes what a learner has to think about, and most of those changes make you a
           more deliberate driver, not a lazier one.
         </p>
 

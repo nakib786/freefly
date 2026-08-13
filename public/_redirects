@@ -1,6 +1,6 @@
 # Cloudflare Pages redirects.
 #
-# Single-page site, so there is no SPA history fallback to configure — every
+# Single-page site, so there is no SPA history fallback to configure; every
 # section is an anchor on /. Deliberately no catch-all rewrite to /index.html:
 # that would turn a genuine 404 (and any mistyped /api/* path) into a 200 with
 # the homepage, which hides real errors and confuses crawlers.

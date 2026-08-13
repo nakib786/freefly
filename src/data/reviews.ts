@@ -10,7 +10,7 @@
  *    including the reviewers' own punctuation and capitalisation.
  *  - `truncated: true` marks a review whose full text was cut off by Google's
  *    "More" expander. Those render with a visible ellipsis and a link to the
- *    full review rather than being silently presented as complete — trimming a
+ *    full review rather than being silently presented as complete. Trimming a
  *    review to its flattering half is exactly the kind of edit that turns a
  *    real testimonial into a fabricated one.
  *  - No review is invented, and none may be added here that was not actually

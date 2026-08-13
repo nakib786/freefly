@@ -4,13 +4,13 @@
  *   npm run favicons
  *
  * Source: assets/FreeFly Logo.png (2000x2000, opaque cream #fffff2).
- * The companion .svg is not usable here — it is a 714 KB wrapper around the
+ * The companion .svg is not usable here: it is a 714 KB wrapper around the
  * same embedded PNG rasters, so it buys no crispness and would be a heavy
  * favicon. Everything is generated from the PNG instead.
  *
  * The full logo lays out as three stacked bands: the Tesla-face car mark, the
  * FREEFLY wordmark, then DRIVING SCHOOL. Only the car mark survives a 16px
- * render — the wordmarks turn to mush — so the script isolates the topmost
+ * render (the wordmarks turn to mush), so the script isolates the topmost
  * ink band and drops the type. Bands are detected rather than hardcoded so a
  * re-exported logo with shifted spacing still crops correctly.
  *
@@ -30,7 +30,7 @@ const OUT_DIR = resolve(ROOT, 'public');
 
 /** Per-channel distance from the background above which a pixel counts as ink. */
 const INK_THRESHOLD = 40;
-/** Ink rows below this count are treated as empty — kills stray resample noise. */
+/** Ink rows below this count are treated as empty; kills stray resample noise. */
 const MIN_ROW_INK = 3;
 /** Vertical run of empty rows that separates the car mark from the wordmark. */
 const BAND_GAP = 40;

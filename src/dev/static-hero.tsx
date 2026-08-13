@@ -1,7 +1,7 @@
 /**
  * Renders the car alone, at STATIC_FRAMING, with no UI over it.
  *
- * This page exists purely so `npm run hero` can photograph it — the result is
+ * This page exists purely so `npm run hero` can photograph it. The result is
  * the image shown to anyone who gets no WebGL at all. Generating the fallback
  * from the same model, lighting rig and camera as the live scene is the point:
  * a hand-picked stock render would drift out of sync the first time the

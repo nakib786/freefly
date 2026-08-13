@@ -57,7 +57,7 @@ type SceneLayerProps = {
   /**
    * Keeps the 3D layer unmounted while the boot screen is still streaming the
    * GLB. Without it, GLTFLoader would request the same file at the same time as
-   * the preloader and the browser would fetch 1.5 MB twice — neither request
+   * the preloader and the browser would fetch 1.5 MB twice: neither request
    * can be served from a cache entry the other has not finished writing.
    */
   hold?: boolean;
@@ -69,7 +69,7 @@ export function SceneLayer({ hold = false }: SceneLayerProps) {
   const demotedLite = useRef(false);
 
   // Warm the scene chunk immediately, even while held. `hold` exists only to
-  // stop GLTFLoader racing the boot preloader for the same GLB — it should not
+  // stop GLTFLoader racing the boot preloader for the same GLB; it should not
   // also delay ~1 MB of three.js, which has nothing to do with that conflict.
   // Kicking the dynamic import off here downloads it alongside the model rather
   // than after it; lazy() below reuses this very module promise.
@@ -126,8 +126,8 @@ export function SceneLayer({ hold = false }: SceneLayerProps) {
   //
   // Two rungs, because there are two different things to give up. From 'full'
   // the answer is the low-power path itself, at the DPR a machine that has just
-  // proven it cannot cope should be asked for. From 'lite' — where the model,
-  // the lighting and the glass are already as cheap as they get — the only dial
+  // proven it cannot cope should be asked for. From 'lite', where the model,
+  // the lighting and the glass are already as cheap as they get, the only dial
   // left is resolution: phones start at 2 on the assumption that a dense screen
   // is worth paying for, and this is what walks that back if it wasn't.
   //

@@ -2,7 +2,7 @@
  * Hero.
  *
  * Not a centred headline on a gradient. The copy is pinned to the lower-left
- * third of a full-height stage, leaving the right side to the car — which is
+ * third of a full-height stage, leaving the right side to the car, which is
  * where keyframe 0's pan puts it. The headline uses Archivo's width axis: three
  * lines set EXPANDED, against a CONDENSED standfirst, so the type contrast is
  * structural rather than just a weight change.
@@ -15,13 +15,13 @@ export function Hero() {
   return (
     // pt reserves the fixed bar's height (h-16 / md:h-20 plus its progress
     // rail). `justify-end` means it costs nothing while the copy fits, but on a
-    // short phone — a 667pt iPhone SE, say — the block is taller than the
+    // short phone (a 667pt iPhone SE, say), the block is taller than the
     // viewport, and without it the kicker and the first headline line grow up
     // underneath the nav instead of pushing the section taller.
     //
     // Kept to just over the bar's height rather than a generous round number.
     // Every pixel here pushes the credential strip down, and a reveal sits at
-    // opacity 0 with a 1.75rem downward offset until it intersects — so once
+    // opacity 0 with a 1.75rem downward offset until it intersects, so once
     // its offset top passes the observer's -8% bottom margin, the strip is on
     // screen and permanently invisible. pt-28 was over that line at 900px tall.
     <section
@@ -48,7 +48,7 @@ export function Hero() {
         <div className="mt-10 grid gap-10 md:mt-14 md:grid-cols-[minmax(0,32rem)_auto] md:items-end md:gap-16">
           <p className="reveal type-condensed text-xl text-cream-dim md:text-2xl" data-reveal>
             {BUSINESS.tagline} Full lesson packages and road-test prep across{' '}
-            {BUSINESS.cities.slice(0, -1).join(', ')} and {BUSINESS.cities.at(-1)} — taught in a
+            {BUSINESS.cities.slice(0, -1).join(', ')} and {BUSINESS.cities.at(-1)}, taught in a
             Model&nbsp;3, with the car provided for your test.
           </p>
 
@@ -70,7 +70,7 @@ export function Hero() {
 
         {/* Credential strip. Set as telemetry so it reads as instrument data
             rather than as a marketing badge. The Google rating leads because it
-            is the one credential that is independently verifiable — the "top 3"
+            is the one credential that is independently verifiable. The "top 3"
             claim is carried unlinked (see AWARD in business.ts for why). */}
         <div
           className="reveal rule-t mt-12 flex flex-wrap items-center gap-x-10 gap-y-4 pt-6 md:mt-16"

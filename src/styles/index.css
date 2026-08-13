@@ -3,8 +3,8 @@
 /* ===========================================================================
    Free Fly design tokens
    ---------------------------------------------------------------------------
-   The accent is an insurance/licensing blue — the register BC drivers already
-   associate with ICBC — rather than the logo's crimson, which read as a warning
+   The accent is an insurance/licensing blue (the register BC drivers already
+   associate with ICBC) rather than the logo's crimson, which read as a warning
    colour and dated the page:
 
      azure    #1a72d6   the primary accent: CTAs, rules, section numbers
@@ -13,7 +13,7 @@
      cream    #fffbf4   the logo's own background
 
    The ink ramp is a near-black carrying a trace of the azure hue, so the darks
-   sit under the accent rather than fighting it — a warm or neutral grey-black
+   sit under the accent rather than fighting it. A warm or neutral grey-black
    leaves #1a72d6 looking like a stray link colour instead of a brand colour.
 
    Contrast: cream on azure is 4.7:1 (AA for the CTA labels), and azure-bright
@@ -21,7 +21,7 @@
    step. Plain azure is reserved for fills, rules and large numerals.
 
    Type: Archivo Variable carries a real width axis (62-125%), so headlines are
-   set EXPANDED and kickers CONDENSED — the contrast is structural, not just
+   set EXPANDED and kickers CONDENSED: the contrast is structural, not just
    weight. That also echoes the logo, whose wordmark is a wide stencil face over
    a narrow tracked-out subtitle. Martian Mono (also width-variable) is used
    small, condensed and letter-spaced for anything numeric, so prices and lesson
@@ -43,7 +43,7 @@
 
   --color-cream: #fffbf4;
   /* The dim and faint steps are read over a translucent scrim on a moving 3D
-     render, not over flat ink — so the contrast they measure against ink-950 is
+     render, not over flat ink, so the contrast they measure against ink-950 is
      the best case, and the worst case is whatever the car happens to put behind
      them. Both were pitched for the flat case (dim 7.9:1, faint 4.4:1) and the
      faint step in particular dissolved wherever a lit panel passed under it.
@@ -138,7 +138,7 @@
   text-transform: uppercase;
 }
 
-/* Condensed counterweight to the expanded headlines — used for standfirsts. */
+/* Condensed counterweight to the expanded headlines, used for standfirsts. */
 @utility type-condensed {
   font-family: var(--font-display);
   font-stretch: 76%;
@@ -151,7 +151,7 @@
 
    line-height is 1.45, not 1. Most of these are single-line labels where the
    value is invisible, but the hero's credential strip and the instructor
-   eyebrow are long strings that wrap on a phone — and at line-height 1 an
+   eyebrow are long strings that wrap on a phone, and at line-height 1 an
    uppercase mono face has its descenders sitting on the next line's caps. */
 @utility type-telemetry {
   font-family: var(--font-mono);
@@ -205,7 +205,7 @@
 
 /* Platform brand colours for the Follow row.
    Facebook and YouTube are flat brand hues. Instagram and TikTok are gradients,
-   so the fill is clipped to the glyphs and `color` must be transparent — which
+   so the fill is clipped to the glyphs and `color` must be transparent, which
    is why nothing in this group takes a hover *colour*; hover rides on opacity
    instead, so the gradient names and the flat ones behave identically. */
 @utility brand-facebook {

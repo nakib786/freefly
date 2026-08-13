@@ -2,12 +2,12 @@
  * Tesla Model 3 loader + material treatment.
  *
  * ─── Asset provenance ──────────────────────────────────────────────────────
- * "Tesla 2018 Model 3" by Ameer Studio — Sketchfab, CC-BY 4.0
+ * "Tesla 2018 Model 3" by Ameer Studio (Sketchfab), CC-BY 4.0
  * https://sketchfab.com/3d-models/tesla-2018-model-3-5ef9b845aaf44203b6d04e2c677e444f
  *
  * The visitor-facing side of that licence is /credits (src/credits/), which
  * publishes the attribution, the list of modifications below, and the original
- * file. src/data/credits.ts is the single copy of those facts — edit them there.
+ * file. src/data/credits.ts is the single copy of those facts; edit them there.
  *
  * Source GLB: 684,315 tris / 394,055 verts / 176 meshes / 58 materials, 21.6 MB.
  * Shipped GLB: 366,721 tris, 1.49 MB (desktop) / 343,798 tris, 1.29 MB (mobile).
@@ -15,8 +15,8 @@
  * Produced by `npm run model:optimize` (scripts/optimize-model.mjs), which is
  * the authoritative record of the pipeline. In short, per LOD:
  *
- *   1. dedup()  — collapse duplicate accessors/materials/textures
- *   2. weld()   — index and merge coincident vertices (required before simplify)
+ *   1. dedup()  collapses duplicate accessors/materials/textures
+ *   2. weld()   indexes and merges coincident vertices (required before simplify)
  *   3. simplifyPrimitive() per primitive, meshoptimizer, ratio+error by tier:
  *        shell  (paint, glass, lights)  not decimated, either LOD
  *        wheels (rims, tyres, hubs)     not decimated, either LOD
@@ -29,12 +29,12 @@
  *
  * Tiering rather than one global ratio is the whole trick here: the cabin is
  * ~32% of the source triangles and is only ever seen through tinted glass, so
- * cutting it to 4-8% is what pays for leaving the body panels and wheels — the
- * surfaces the hero camera sits right on top of — completely alone.
+ * cutting it to 4-8% is what pays for leaving the body panels and wheels (the
+ * surfaces the hero camera sits right on top of) completely alone.
  *
  * On the triangle count: this lands well above a 30-50k budget, and that is a
  * deliberate, measured call rather than a miss. Decimating the shell at all is
- * what made the paint look dented — meshoptimizer bounds positional error and
+ * what made the paint look dented: meshoptimizer bounds positional error and
  * has no view of the normals, which is the thing clearcoat magnifies. See the
  * "Why the shell is not decimated" note in optimize-model.mjs for the A/B. The
  * constraint that actually binds is transfer size, and 1.49 MB is a 15x
@@ -88,7 +88,7 @@ const PAINT = {
    * gradient an 8-bit output buffer cannot represent: the falloff across the
    * bonnet crosses maybe a dozen quantisation steps over hundreds of pixels, so
    * it lands as visible bands with mushy, wandering edges rather than a smooth
-   * ramp. Desktop hides it — a 2x DPR buffer downsampled into a physical pixel
+   * ramp. Desktop hides it: a 2x DPR buffer downsampled into a physical pixel
    * averages four samples and dithers the step by accident, and MSAA helps
    * further. A phone at half its native DPR with no MSAA has no such luck, and
    * the bands are what "melting" looks like on a moving car.
@@ -110,10 +110,10 @@ const isChrome = (name: string) => /(chrome|aluminium|movsteer_1\.0\.1|mirror_in
  * The rim face.
  *
  * `wheels.6` is the only wheel slot in this export whose base-colour map is a
- * white rim on black — every other `wheels.*` map is already dark (tyre tread,
+ * white rim on black; every other `wheels.*` map is already dark (tyre tread,
  * brake disc, wheel barrel). Left alone it renders as a bright silver wheel,
  * which is not the car the school teaches in: Free Fly's Model 3 is white with
- * dark graphite wheels. Same reasoning as PAINT above — the model is normalised
+ * dark graphite wheels. Same reasoning as PAINT above: the model is normalised
  * to the real vehicle rather than trusted.
  *
  * Tinting the existing map rather than dropping it keeps the moulded shading
@@ -129,7 +129,7 @@ const RIM = {
 };
 
 /**
- * The tyre carcass slots — sidewall, tread and barrel (`wheels.0` ships no map
+ * The tyre carcass slots: sidewall, tread and barrel (`wheels.0` ships no map
  * at all, `wheels.2` and `wheels.3` average 28/255).
  *
  * Stated outright rather than inherited from the maps, and the metal/roughness
@@ -153,15 +153,15 @@ function treatMaterial(src: THREE.Material, simplified: boolean): THREE.Material
   const std = src as THREE.MeshStandardMaterial;
 
   if (isPaint(name)) {
-    // Colour, finish AND base map all come from PAINT — the import is not
+    // Colour, finish AND base map all come from PAINT; the import is not
     // trusted for any of them. `primary.004` exports as vivid chartreuse, and
     // the two slots that do carry a base-colour map (`primary.001` on the
     // sills, `primary.002` on all four doors) are dark, high-contrast atlases
-    // — mean luminance ~50/255 at a standard deviation of ~96. glTF multiplies
+    // with mean luminance ~50/255 at a standard deviation of ~96. glTF multiplies
     // that into the base colour, so keeping it stained the white paint in
     // mottled grey patches, and at mobile texture sizes and mip levels the
     // patches blur into each other: the "watercolour" panels. The panel gaps
-    // and shut lines are modelled geometry — the shell is never decimated — so
+    // and shut lines are modelled geometry (the shell is never decimated), so
     // dropping the map costs no detail. normalMap is kept; no paint slot in
     // this export actually ships one, but a re-export might.
     const paint = new THREE.MeshPhysicalMaterial({ name, ...PAINT });
@@ -175,8 +175,8 @@ function treatMaterial(src: THREE.Material, simplified: boolean): THREE.Material
     // `transmission` is not a shading flag, it is a second render of the whole
     // scene: three.js renders everything else into a transmission render target
     // and the glass samples it, blurred by roughness. On mobile that buffer is
-    // allocated at a fraction of the drawing buffer — which is itself already
-    // capped at 1.5 DPR — and then sampled through a curved windscreen. The
+    // allocated at a fraction of the drawing buffer (which is itself already
+    // capped at 1.5 DPR), and then sampled through a curved windscreen. The
     // result is a smeared, wobbling image of the car's own roof and pillars
     // dragged across the greenhouse as the camera moves, which is the melt.
     //
@@ -238,7 +238,7 @@ function treatMaterial(src: THREE.Material, simplified: boolean): THREE.Material
   // Lit elements are identified from the data, not the name: eight materials in
   // this GLB carry an emissive map (headlights, tail bar, indicators, LCDs).
   // Name matching would wrongly catch `black_lights` and `aluminium_light`,
-  // which are the dark housing and the reflector — making those glow looks
+  // which are the dark housing and the reflector, so making those glow looks
   // broken. glTF multiplies emissiveFactor by emissiveMap, and this export
   // leaves some factors black, so the factor is forced white where a map exists.
   if (std.emissiveMap) {
@@ -271,8 +271,8 @@ function treatMaterial(src: THREE.Material, simplified: boolean): THREE.Material
  * That is what made the wheels wobble. Bucketing meshes into four quadrants by
  * bounding-box centre puts an axle-pair mesh on the car's *centreline*, so both
  * front wheels landed in one bucket behind a pivot a metre inboard of either
- * tyre. Spin survived that by luck — the pivot still sat on the axle line, and
- * a rotation about the axle is correct for both wheels at once — but steering
+ * tyre. Spin survived that by luck: the pivot still sat on the axle line, and
+ * a rotation about the axle is correct for both wheels at once, but steering
  * did not: `rotation.y` swung the whole front axle about a vertical axis near
  * the car's middle, scything the wheels fore and aft instead of turning them on
  * the spot. So the pairs are split into real per-corner wheels first, and only
@@ -283,8 +283,8 @@ type WheelPart = { mesh: THREE.Object3D; box: THREE.Box3; centre: THREE.Vector3 
 
 /**
  * A mesh at least this much wider across the car than it is tall holds both
- * wheels of an axle. A single wheel is a disc — its lateral span is the tyre
- * width, a fraction of its diameter — so the two cases are far apart: the axle
+ * wheels of an axle. A single wheel is a disc, and its lateral span is the tyre
+ * width, a fraction of its diameter, so the two cases are far apart: the axle
  * pairs measure ~3.7, and the widest hub ~0.9.
  */
 const AXLE_PAIR_RATIO = 1.6;
@@ -297,7 +297,7 @@ const AXLE_PAIR_RATIO = 1.6;
  * so this costs one extra index rather than a second copy of the geometry.
  * Bounding volumes are set by hand on purpose: computeBoundingBox() reads the
  * whole position attribute regardless of which vertices the index actually
- * references, so both halves would report the bounds of the entire axle — and
+ * references, so both halves would report the bounds of the entire axle, and
  * the bucketing below would put us straight back on the centreline.
  */
 function splitAxlePair(mesh: THREE.Mesh, splitX: number): THREE.Mesh[] | null {
@@ -326,8 +326,8 @@ function splitAxlePair(mesh: THREE.Mesh, splitX: number): THREE.Mesh[] | null {
     const a = index ? index.getX(t * 3) : t * 3;
     const b = index ? index.getX(t * 3 + 1) : t * 3 + 1;
     const c = index ? index.getX(t * 3 + 2) : t * 3 + 2;
-    // The two wheels are disjoint clusters with a metre of air between them —
-    // no triangle bridges the gap — so one vertex decides the whole triangle.
+    // The two wheels are disjoint clusters with a metre of air between them, and
+    // no triangle bridges the gap, so one vertex decides the whole triangle.
     indices[side[a]].push(a, b, c);
   }
   if (!indices[0].length || !indices[1].length) return null;
@@ -422,7 +422,7 @@ function buildWheelGroups(root: THREE.Object3D): WheelGroups | null {
     pivot.name = `wheel-${key}`;
     root.add(pivot);
     // `centre` is a world-space point, but position is expressed in the
-    // parent's local space — and `root` carries the import normalisation
+    // parent's local space, and `root` carries the import normalisation
     // (~0.0089 uniform scale plus a translation). Assigning the world value
     // directly puts the pivot roughly a hundred metres away, which looks fine
     // until the wheel rotates and then swings it across the sky.

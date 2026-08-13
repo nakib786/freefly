@@ -5,14 +5,14 @@
  *
  * `assets/FreeFly Logo.svg` is 714 KB, and almost none of that is vector: the
  * car mark is three base64 PNGs embedded via <image>, plus a C2PA metadata
- * blob. What *is* real vector is the type — 21 paths filled #58646a, in two
+ * blob. What *is* real vector is the type: 21 paths filled #58646a, in two
  * groups: "FREEFLY" and "DRIVING SCHOOL". Those are worth pulling out, because
  * a vector wordmark recolours to `currentColor` and stays crisp at any size,
  * which a 1.16 MB opaque-cream PNG cannot do on a near-black page.
  *
  * The car mark is deliberately NOT extracted for site use. Keying the cream out
  * of it would eat the windscreen gradient and leave halos on dark, and the page
- * already has an actual 3D Tesla on it — a Tesla-face logo beside a Tesla
+ * already has an actual 3D Tesla on it, and a Tesla-face logo beside a Tesla
  * render is redundant. The car mark stays where it reads well: the favicon
  * (see generate-favicons.mjs, which keeps the cream plate on purpose).
  */
@@ -56,7 +56,7 @@ const svg = readFileSync(SRC, 'utf8');
 
 const groups = GROUPS.map(({ name, marker }) => {
   const at = svg.indexOf(marker);
-  if (at === -1) throw new Error(`Could not find the ${name} group — has the logo been re-exported?`);
+  if (at === -1) throw new Error(`Could not find the ${name} group. Has the logo been re-exported?`);
   return readGroup(svg, at);
 });
 
@@ -72,7 +72,7 @@ const render = (viewBox) =>
  * The glyph outlines overshoot the group transforms slightly, so a viewBox
  * derived from those numbers shaves the first and last letters. Rasterise once
  * against a generous box, find where the ink actually is, and map back into SVG
- * units — that way a re-exported logo with different metrics still crops right.
+ * units, so a re-exported logo with different metrics still crops right.
  */
 const PROBE = { x: -60, y: 940, w: 1660, h: 660 };
 const PROBE_W = 1660;

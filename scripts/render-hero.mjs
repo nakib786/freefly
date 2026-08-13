@@ -1,5 +1,5 @@
 /**
- * Renders public/models/tesla-static-hero.webp — the image shown to visitors
+ * Renders public/models/tesla-static-hero.webp, the image shown to visitors
  * who get no WebGL at all.
  *
  *   npm run dev          # in another terminal, must be on :5180
@@ -20,7 +20,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SHOT = resolve(ROOT, '.captures/static-hero-raw.png');
 const OUT = resolve(ROOT, 'public/models/tesla-static-hero.webp');
 
-// 2x the widest breakpoint we care about, then downscaled — cheap supersampling
+// 2x the widest breakpoint we care about, then downscaled: cheap supersampling
 // that hides SwiftShader's rougher antialiasing.
 const WIDTH = 2560;
 const HEIGHT = 1600;

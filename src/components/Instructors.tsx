@@ -3,12 +3,12 @@
  *
  * The section is built around the one real portrait the client supplied: Harry
  * beside the branded Model 3. It runs full-bleed on the left against the bio
- * and the review evidence on the right — not a centred headshot in a rounded
+ * and the review evidence on the right, not a centred headshot in a rounded
  * card, and not three identical team tiles.
  *
  * The bio in business.ts asserts only what is sourced (founding year, licence
  * classes, the car, and what reviewers actually say). The TRAITS quotes below
- * must each appear word-for-word in reviews.ts — they are evidence for the
+ * must each appear word-for-word in reviews.ts: they are evidence for the
  * claims beside them, not decoration.
  */
 import { useState } from 'react';
@@ -73,7 +73,7 @@ export function Instructors() {
         </h2>
       </div>
 
-      {/* Photo left, evidence right. Uneven split — the portrait earns the
+      {/* Photo left, evidence right. Uneven split: the portrait earns the
           larger share because it is the only real face on the page. */}
       <div className="mt-14 grid gap-10 md:mt-20 md:grid-cols-12 md:gap-14">
         <div className="md:col-span-7">
@@ -117,7 +117,7 @@ export function Instructors() {
         </div>
       </div>
 
-      {/* The licence pathway — real, structural, and useful on its own.
+      {/* The licence pathway: real, structural, and useful on its own.
           `relative` + its own backdrop because this band sits low in the
           section where the section-level scrim has already faded out, and the
           car's bright nose passes directly behind it. */}
@@ -136,7 +136,7 @@ export function Instructors() {
           }}
         />
         <p className="reveal type-telemetry mb-8 text-cream-dim" data-reveal>
-          {BUSINESS.licenceClasses.join(' to ')} — how it runs · teaching since {FOUNDED}
+          {BUSINESS.licenceClasses.join(' to ')}: how it runs · teaching since {FOUNDED}
         </p>
         <ol className="grid gap-px md:grid-cols-4">
           {JOURNEY.map((stage) => (

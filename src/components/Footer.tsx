@@ -1,7 +1,7 @@
 /**
  * Footer.
  *
- * The car's CC-BY attribution is no longer inline here — it lives on /credits,
+ * The car's CC-BY attribution is no longer inline here. It lives on /credits,
  * linked below. The licence asks for credit "in any reasonable manner based on
  * the medium"; a linked credits page is the ordinary form of that on the web,
  * and it buys the room to name the author properly, list what was changed to
@@ -14,13 +14,13 @@ import { DEVELOPER } from '@/data/credits';
 
 /**
  * The camera's last keyframe parks the car centred and low, directly behind
- * this footer — so a solid plate here blacks out the one framing the whole
+ * this footer, so a solid plate here blacks out the one framing the whole
  * scroll has been driving toward. The footer gets a scrim instead, like every
  * section above it: clear enough at the top for the parked car and its
  * headlights to read, firming up under the smallest legal type.
  *
  * It opens at 0.32 rather than 0 because Contact's `top` scrim leaves off at
- * 0.35 — starting from nothing would put the page's clearest band at the seam
+ * 0.35. Starting from nothing would put the page's clearest band at the seam
  * and make the join look like a rendering fault instead of a fade.
  */
 const FOOTER_SCRIM =
@@ -39,7 +39,7 @@ export function Footer() {
           <div>
             <Wordmark className="h-8 w-auto text-cream md:h-10" />
             <p className="type-condensed mt-6 max-w-[34ch] text-base text-cream-dim">
-              {BUSINESS.legalName} — {BUSINESS.licenceClasses.join(' & ')} driving lessons in a
+              {BUSINESS.legalName}. {BUSINESS.licenceClasses.join(' & ')} driving lessons in a
               Tesla Model 3 across the {BUSINESS.region}.
             </p>
           </div>

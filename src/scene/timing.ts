@@ -19,7 +19,7 @@ import { KEYFRAMES } from '@/scene/keyframes';
 
 /**
  * How far down the viewport a section's top sits when its beat is reached.
- * 0.25 means "a quarter of the way down" — far enough in that the section is
+ * 0.25 means "a quarter of the way down": far enough in that the section is
  * clearly what you are reading, not so far that the camera arrives late.
  */
 const ARRIVAL = 0.25;

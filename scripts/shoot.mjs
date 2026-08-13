@@ -4,7 +4,7 @@
  *   node scripts/shoot.mjs [url] [--w=1440] [--h=900] [--scroll=0.5] [--out=name]
  *
  * Chrome is driven over a raw CDP websocket rather than through Puppeteer so
- * this needs no extra dependency — the browser is already on the machine, and
+ * this needs no extra dependency: the browser is already on the machine, and
  * pulling in a 300 MB automation package to take a picture would be silly.
  *
  * WebGL matters here: `--headless=new` with SwiftShader renders the 3D layer
@@ -131,7 +131,7 @@ try {
     // Stepped, not a single jump. The page reveals content on IntersectionObserver
     // entry and unobserves each node once shown, so a one-shot scrollTo past
     // several screens can land with sections that were never intersected still
-    // at opacity 0 — the capture then shows empty bands where the copy should
+    // at opacity 0, so the capture then shows empty bands where the copy should
     // be, which looks like a layout bug and is not one. Walking down in screen-
     // sized steps is also just what a reader does.
     const steps = Math.max(1, Math.ceil((scroll * 12000) / height));
@@ -145,7 +145,7 @@ try {
     // Wait for the reveals to actually finish rather than guessing a duration.
     // Under headless compositing an opacity transition can take several seconds
     // of wall clock to advance even though it is authored at 0.9s, so a fixed
-    // sleep produced screenshots with whole sections blank — which reads as a
+    // sleep produced screenshots with whole sections blank, which reads as a
     // layout bug in the page and is purely an artefact of the capture.
     const settled = `(() => {
       const inView = [...document.querySelectorAll('[data-reveal]')]
@@ -178,7 +178,7 @@ try {
 } finally {
   chrome.kill();
   // Best effort. kill() is not synchronous, so on Windows the profile's files
-  // are usually still locked a moment later — and this is a temp directory the
+  // are usually still locked a moment later, and this is a temp directory the
   // OS will reap anyway. Failing the run over it would throw away the capture
   // that was just taken.
   try {

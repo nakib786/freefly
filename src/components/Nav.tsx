@@ -1,7 +1,7 @@
 /**
  * Top bar.
  *
- * Deliberately not a floating pill with backdrop-blur — that treatment is the
+ * Deliberately not a floating pill with backdrop-blur. That treatment is the
  * single most recognisable "AI site" tell, and it would frost over the car the
  * whole page is built around. This is a flat hairline-ruled bar: wordmark left,
  * waypoint links centre-right, one solid call button. The only motion is a
@@ -53,7 +53,7 @@ export function Nav() {
   return (
     <header className="rule-b fixed inset-x-0 top-0 z-40 bg-ink-950/85">
       <div className="gutter flex h-16 items-center justify-between gap-6 md:h-20">
-        <a href="#top" className="flex items-center gap-3 text-cream" aria-label={`${BUSINESS.name} — home`}>
+        <a href="#top" className="flex items-center gap-3 text-cream" aria-label={`${BUSINESS.name}, home`}>
           <Wordmark className="h-5 w-auto md:h-6" />
         </a>
 
